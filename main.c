@@ -16,82 +16,49 @@
 #include "codexion.h"
 #include <unistd.h>
 
-void	*thread_cycle(void *arg)
-{
-	t_mutex_dongle	*md;
+#define N_THREAD 5
+#define INCREMENTS 1000
 
-	md = (t_mutex_dongle *) arg;
-	pthread_mutex_lock(&md->mutex);
-	sleep(1);
-	pthread_mutex_unlock(&md->mutex);
-	pthread_exit(NULL);
+int counter = 0;
+pthread_mutex_t counter_mutex;
+
+void *increment(void *arg)
+{
+	while (counter < INCREMENTS)
+	{
+		pthread_mutex_lock(&counter_mutex);
+		counter++;
+		pthread_mutex_unlock(&counter_mutex);
+	}
+	return NULL;
 }
 
-pthread_t	*init_chain()
+int	main()
 {
-	int			i;
-	void	*result;
+	pthread_t *threads;
+	int i;
 
-	i = 7;
+	i = 0;
+	threads = malloc(sizeof(pthread_t) * N_THREAD);
+	if (!threads)
+		return 1;
 
-	while (i)
+	pthread_mutex_init(&counter_mutex, NULL);
+
+	while (i < N_THREAD)
 	{
-		if (i % 2)
-		{
-			t_mutex_dongle dongle;
-
-			dongle.left = &result;
-			result.right = &dongle;
-			result = &dongle;
-		}
-		else
-		{
-			t_thread_coder coder;
-
-			coder.left = &result;
-			result.right = &coder;
-			result = &coder;
-		}
-
+		pthread_create(&threads[i], NULL, increment, NULL);
+		i++;
 	}
-}
-
-void	add_nodes(void *list, int i)
-{
-	t_mutex_dongle	dongle;
-	t_thread_coder	coder;
-	void			**tmp;
-
-	coder->right = &dongle;
-	dongle->left = &coder;
-	*tmp = list;
-	while (tmp->right)
-		*tmp = tmp->next;
-	(*tmp)->right = &coder;
-	coder->left = *tmp
-}
-
-int	main(void)
-{
-	t_mutex_dongle	md;
-	pthread_t	coder;
-	int	err;
-
-	md.data = 0;
-	if (pthread_mutex_init(&md.mutex, NULL) != 0)
+	i = 0;
+	while (i < N_THREAD)
 	{
-		printf("fail init mutex\n");
-		return (1);
+		pthread_join(threads[i], NULL);
+		i++;
 	}
-	err = pthread_create(&coder, NULL, thread_cycle, &md);
-	if (err != 0)
-	{
-		printf("Create thread fail");
-		return (1);
-	}
-	pthread_join(coder, NULL);
-	pthread_mutex_destroy(&md.mutex);
+	pthread_mutex_destroy(&counter_mutex);
 
-
-	return (0);
+	printf("%d\n", counter);
+	free(threads);
+	return 0;
 }

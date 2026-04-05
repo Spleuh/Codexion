@@ -15,16 +15,5 @@
 
 # include <pthread.h>
 
-typedef struct mutex_dongle
-{
-	t_thread_coder	*left;
-	t_thread_coder	*right;
-	pthread_mutex_t	mutex;
-}	t_mutex_dongle;
 
-typedef struct thread_coder
-{
-	t_mutex_dongle	*left;
-	t_mutex_dongle	*right;
-}	t_thread_coder;
 #endif

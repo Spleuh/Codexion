@@ -14,7 +14,7 @@
 # define CODEXION_H
 
 # include <pthread.h>
-
+# include <stdlib.h>
 typedef struct s_data
 {
 	int	n_coders;
@@ -37,9 +37,24 @@ typedef struct s_coder
 
 typedef struct s_dongle
 {
-	int	id;
-	pthread_mutex mutex;
-	t_coder	coder_left;
-	t_coder	coder_right;
+	pthread_mutex_t mutex;
+	pthread_cond_t	cond;
+	int				status;
+	long			end_cooldown;
 }	t_dongle;
+
+typedef struct s_args_cycle
+{
+	int	id_coder;
+	struct s_dongle *dongles;
+	struct s_data	*data;
+}	t_args_cycle;
+
+typedef struct s_queue
+{
+	int		coder_id;
+	long	deadline;
+}	t_queue;
+
+t_data	*store_data(int argc, char **argv);
 #endif

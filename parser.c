@@ -55,6 +55,7 @@ int	parser(int argc, char **argv)
 		result = -1;
 	if (!result && strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
 		result = -1;
+	result->stop_sim = False;
 	return result;
 }
 

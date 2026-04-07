@@ -15,16 +15,19 @@
 
 # include <pthread.h>
 # include <stdlib.h>
+
 typedef struct s_data
 {
-	int	n_coders;
-	int	t_burnout;
-	int	t_compile;
-	int	t_debug;
-	int	t_refactor;
-	int	n_compiles;
-	int	t_cooldown;
+	int		n_coders;
+	int		t_burnout;
+	int		t_compile;
+	int		t_debug;
+	int		n_refactor;
+	int		n_compiles;
+	int		t_cooldown;
 	char	*scheduler;
+	bool	stop_sim;
+	pthread_mutex_t mutex_global;
 }	t_data;
 
 typedef struct s_coder
@@ -40,16 +43,16 @@ typedef struct s_dongle
 	int				id;
 	pthread_mutex_t mutex;
 	pthread_cond_t	cond;
-	int				status;
-	int				reserved_for;
 	long			end_cooldown;
 }	t_dongle;
 
 typedef struct s_args_cycle
 {
 	int	id_coder;
-	struct s_dongle *dongles;
+	struct s_dongle *dongle_left;
+	struct s_dongle *dongle_right;
 	struct s_data	*data;
+	bool			*stop_sim;
 }	t_args_cycle;
 
 typedef struct s_queue
@@ -59,4 +62,5 @@ typedef struct s_queue
 }	t_queue;
 
 t_data	*store_data(int argc, char **argv);
+
 #endif

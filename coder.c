@@ -1,34 +1,50 @@
 #include "codexion.h"
 
-void    lock_wait_dongles(t_dongle *dongle_left, t_dongle *dongle_right)
+void    compile(t_args_cycle *args_cycle)
 {
 	int	check_left;
 	int	check_right;
 
-	check_left = (dongle_left->status && (dongle_left->reserved_for < 0 || dongle_left->reserved_for == args_cycle->id_coder));
-	check_right = (dongle_right->status && (dongle_right->reserved_for < 0 || dongle_right->reserved_for == args_cycle->id_coder));
+    while(1)
+    {
+	    pthread_mutex_lock(&dongle_left->mutex_decision);
+	    pthread_mutex_lock(&dongle_right->mutex_decision);
+	    check_left = (dongle_left->status && (dongle_left->reserved_for < 0 || dongle_left->reserved_for == args_cycle->id_coder));
+	    check_right = (dongle_right->status && (dongle_right->reserved_for < 0 || dongle_right->reserved_for == args_cycle->id_coder));
+        if (check_left && check_right)
+        {
 
-	pthread_mutex_lock(&dongle_left->mutex);
-	pthread_mutex_lock(&dongle_right->mutex);
+        }
+        else
+        {
+            pthread_mutex_unlock(&dongle_left->mutex_decision);
+	        pthread_mutex_unlock(&dongle_right->mutex_decision);
+        }
+
+    }
+
+    while(!check_left || !check_right)
+    {
+        pthread_cond_wait()
+    }
 	if (check_left && check_right)
 	{
 		dongle_left->reserved_for == args_cycle->id_coder;
 		dongle_left->status = 0;
 	}
+    else
+    {
+        pthread_cond_wait()
+    }
+
     return ;
 }
 
 void    cycle_coder(t_args_cycle *args_cycle)
 {
-	t_dongle *dongle_left;
-	t_dongle *dongle_right;
-
-	dongle_left = args_cycle->dongles[args_cycle->id_coder];
-	dongle_right = args_cycle->dongles[(args_cycle->id_coder + 1) % args_cycle->data->n_coders];
-    while(!stop_sim)
+    while(!args_cycle->stop_sim)
     {
-
-
+        lock_wait_dongles(args_cycle);
     }
 }
 
@@ -40,8 +56,10 @@ t_args_cycle    *get_args_cycle(int  id_coder, t_data *data, t_dongle *dongles)
     if (!args_cycle)
         return (NULL);
     args_cycle->id_coder = id_coder;
-    args_cycle->dongles = dongles;
-    args_cycle->data = data;
+    args_cycle->dongles_left = dongles[id_coder];
+    args_cycle->dongles_right = dongles[(id_coder + 1) % data->n_coders];
+    args_cycle->mutex_global = data->mutex_global;
+    args_cycle->stop_sim = &data->stop_sim;
     return args_cycle;
 }
 

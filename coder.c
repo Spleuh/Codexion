@@ -1,8 +1,20 @@
 #include "codexion.h"
 
-void    lock_wait_dongles()
+void    lock_wait_dongles(t_dongle *dongle_left, t_dongle *dongle_right)
 {
+	int	check_left;
+	int	check_right;
 
+	check_left = (dongle_left->status && (dongle_left->reserved_for < 0 || dongle_left->reserved_for == args_cycle->id_coder));
+	check_right = (dongle_right->status && (dongle_right->reserved_for < 0 || dongle_right->reserved_for == args_cycle->id_coder));
+
+	pthread_mutex_lock(&dongle_left->mutex);
+	pthread_mutex_lock(&dongle_right->mutex);
+	if (check_left && check_right)
+	{
+		dongle_left->reserved_for == args_cycle->id_coder;
+		dongle_left->status = 0;
+	}
     return ;
 }
 
@@ -15,7 +27,8 @@ void    cycle_coder(t_args_cycle *args_cycle)
 	dongle_right = args_cycle->dongles[(args_cycle->id_coder + 1) % args_cycle->data->n_coders];
     while(!stop_sim)
     {
-        pthread_cond_wait(&cond, &mutex_global)
+
+
     }
 }
 

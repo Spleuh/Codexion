@@ -37,9 +37,11 @@ typedef struct s_coder
 
 typedef struct s_dongle
 {
+	int				id;
 	pthread_mutex_t mutex;
 	pthread_cond_t	cond;
 	int				status;
+	int				reserved_for;
 	long			end_cooldown;
 }	t_dongle;
 

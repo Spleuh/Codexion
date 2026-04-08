@@ -50,6 +50,7 @@ void   compile(t_coder *coder)
     usleep(coder->data->t_compile * 1000);
     coder->last_compile_start = get_timestamp();
     coder->compiles_done++;
+    printf("%d : %d\n", coder->id, coder->compiles_done);
 }
 
 void    *routine(void *arg)

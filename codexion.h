@@ -67,6 +67,7 @@ typedef struct s_data
 	pthread_mutex_t	mutex_stop;       // mutex stop sim
 	pthread_mutex_t mutex_start;	// mutex start sim
 	pthread_cond_t	cond_start;
+	pthread_t		monitor;
 	int				stop_sim;		// 0 continue 1 stop
 	int				start_sim;		// 0 wait 1 start
 	t_dongle		*dongles;         // arr dongles
@@ -89,4 +90,7 @@ t_heap  *init_heap();
 
 // request.c 
 t_req   *init_req_arr(int max_capacity);
+
+// monitor.c
+int init_monitor(t_coder *coder);
 #endif

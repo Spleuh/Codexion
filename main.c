@@ -25,7 +25,7 @@ int	main(int argc, char **argv)
 	if (!coders)
 		return 1;
 	init_coders(coders, data);
-
+	init_monitor(coders);
 	pthread_mutex_lock(&data->mutex_start);
     data->start_sim = 1;
     pthread_mutex_unlock(&data->mutex_start);

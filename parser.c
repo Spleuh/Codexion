@@ -90,6 +90,7 @@ t_data	*store_data(int argc, char **argv)
 		free(data);
 		return (NULL);
 	}
+	
 	return (data);
 }
 

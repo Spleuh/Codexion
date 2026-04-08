@@ -66,7 +66,7 @@ t_data	*store_data(int argc, char **argv)
 	data->scheduler = ft_strcpy(argv[8]);
 	data->stop_sim = 0;
 	data->start_sim = 0;
-	init_dongles();
+	init_dongles(data);
 	if (!data->scheduler)
 	{
 		free(data);

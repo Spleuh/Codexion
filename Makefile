@@ -1,7 +1,7 @@
 CFLAGS= gcc -Wall -Wextra -Werror -pthread -g
 
 
-SRC= main.c parser.c utils.c
+SRC= main.c parser.c utils.c coder.c dongle.c heap.c request.c monitor.c
 
 OBJ= $(SRC:.c=.o)
 

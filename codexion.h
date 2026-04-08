@@ -16,6 +16,8 @@
 # include <pthread.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdio.h>
+# include <unistd.h>
 
 typedef struct s_req // struct request
 {
@@ -26,6 +28,7 @@ typedef struct s_req // struct request
 
 typedef struct s_heap
 {
+	pthread_mutex_t mutex_heap;
 	t_req	*arr; // array with all request
 	int		size; // actual size of arr;
 	int		max_capacity; // capacity 2 by default, only 2 coders for 1 dongle 
@@ -38,7 +41,7 @@ typedef struct s_dongle
 	pthread_cond_t	cond; // pthread cond for signal/broadcast
 	long			end_cooldown; // end of cooldown
 	int				available; // status available or not 
-	t_heap			heap; //waiting heap fifo edf 
+	t_heap			*heap; //waiting heap fifo edf 
 }	t_dongle;
 
 typedef struct s_coder
@@ -63,6 +66,7 @@ typedef struct s_data
 	pthread_mutex_t	mutex_print;      // mutex print log
 	pthread_mutex_t	mutex_stop;       // mutex stop sim
 	pthread_mutex_t mutex_start;	// mutex start sim
+	pthread_cond_t	cond_start;
 	int				stop_sim;		// 0 continue 1 stop
 	int				start_sim;		// 0 wait 1 start
 	t_dongle		*dongles;         // arr dongles
@@ -73,4 +77,16 @@ char	*ft_strcpy(char *str);
 
 // parser.c
 t_data	*store_data(int argc, char **argv);
+
+// coder.c
+int    init_coders(t_coder *coders, t_data *data);
+
+// dongle.c
+int init_dongles(t_data *data);
+
+// heap.c
+t_heap  *init_heap();
+
+// request.c 
+t_req   *init_req_arr(int max_capacity);
 #endif

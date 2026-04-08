@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "codexion.h"
 #include <unistd.h>
 
@@ -25,8 +24,20 @@ int	main(int argc, char **argv)
 	coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!coders)
 		return 1;
-	init_coders(coders, data->n_coders);
-	printf("%d\n", data->t_cooldown);
+	init_coders(coders, data);
+
+	pthread_mutex_lock(&data->mutex_start);
+    data->start_sim = 1;
+    pthread_mutex_unlock(&data->mutex_start);
+    pthread_cond_broadcast(&data->cond_start);
+
+	int	i;
+	i = 0;
+	while(i < data->n_coders)
+	{
+		pthread_join(coders[i].thread, NULL);
+		i++;
+	}
 	free(coders);
 	return 0;
 }

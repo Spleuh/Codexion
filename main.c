@@ -16,16 +16,16 @@
 
 int	main(int argc, char **argv)
 {
-	pthread_t *coders;
+	t_coder *coders;
 	t_data	*data;
-
+	
 	data = store_data(argc, argv);
 	if (!data)
-		return (1);
-	coders = malloc(sizeof(pthread_t) * data->n_coders);
+		return 1;
+	coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!coders)
 		return 1;
-
+	init_coders(coders, data->n_coders);
 	printf("%d\n", data->t_cooldown);
 	free(coders);
 	return 0;

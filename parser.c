@@ -1,5 +1,5 @@
 #include "codexion.h"
-#include <string.h>
+
 int check_arg_int(int time, int min)
 {
 	if (time < min || time > 2147483647)
@@ -16,7 +16,7 @@ int check_int(char *arg)
 		return -1;	
 	while (arg[i])
 	{
-		if (arg[i] < 30 || arg[i] > 39)
+		if (arg[i] < '0' || arg[i] > '9')
 			return -1;
 		i++;
 	}
@@ -26,36 +26,24 @@ int check_int(char *arg)
 int	parser(int argc, char **argv)
 {
 	int i;
-	int *converted;
 	int result;
+	int	tmp;
 
 	result = 0;
-	converted = malloc(sizeof(int) * 7);
-	if (!converted)
-		return -1;
 	if (argc != 9)
 		return -1;
 	i = 1;
-	while(i < 8 && !result)
+	while (i < 8)
 	{
-		if (!check_int(argv[i]))
-			return -1;
-		converted[i - 1] = atoi(argv[i]);	
-		if (!converted[i - 1])
-			result = -1;
+		if (check_int(argv[i]) < 0)
+			return (-1);
+		tmp = atoi(argv[i]);
+		if (tmp < 1 || (i == 1 && tmp < 2))
+			return (-1);
 		i++;
 	}
-	if (!result && check_arg_int(converted[0], 2) < 0)
-		result = -1;
-	i = 1;
-	while (!result && !check_arg_int(converted[i], 1) && i < 7)
-		i++;
-	free(converted);
-	if (!result && i != 7)
-		result = -1;
 	if (!result && strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
-		result = -1;
-	result->stop_sim = False;
+		return (-1);
 	return result;
 }
 
@@ -63,7 +51,7 @@ t_data	*store_data(int argc, char **argv)
 {
 	t_data	*data;
 
-	if (!*argv || parser(argc, argv) < 0)
+	if (parser(argc, argv) < 0)
 		return (NULL);
 	data = malloc(sizeof(t_data));
 	if (!data)
@@ -75,7 +63,33 @@ t_data	*store_data(int argc, char **argv)
 	data->t_refactor = atoi(argv[5]);
 	data->n_compiles = atoi(argv[6]);
 	data->t_cooldown = atoi(argv[7]);
-	data->scheduler = argv[8];
+	data->scheduler = ft_strcpy(argv[8]);
+	data->stop_sim = 0;
+	data->start_sim = 0;
+	init_dongles();
+	if (!data->scheduler)
+	{
+		free(data);
+		return (NULL);
+	}
+	if (pthread_mutex_init(&data->mutex_print, NULL) != 0)
+	{
+		free(data);
+		return (NULL);
+	}
+	if (pthread_mutex_init(&data->mutex_stop, NULL) != 0)
+	{
+		pthread_mutex_destroy(&data->mutex_print);
+		free(data);
+		return (NULL);
+	}
+	if (pthread_mutex_init(&data->mutex_start, NULL) != 0)
+	{
+		pthread_mutex_destroy(&data->mutex_print);
+		pthread_mutex_destroy(&data->mutex_stop);
+		free(data);
+		return (NULL);
+	}
 	return (data);
 }
 

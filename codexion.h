@@ -15,52 +15,62 @@
 
 # include <pthread.h>
 # include <stdlib.h>
+# include <string.h>
 
-typedef struct s_data
+typedef struct s_req // struct request
 {
-	int		n_coders;
-	int		t_burnout;
-	int		t_compile;
-	int		t_debug;
-	int		n_refactor;
-	int		n_compiles;
-	int		t_cooldown;
-	char	*scheduler;
-	bool	stop_sim;
-	pthread_mutex_t mutex_global;
-}	t_data;
+	int		coder_id; // request from coder id
+	long	deadline; // last compile + t_burnout
+	long	order;  // security if same deadline
+}	t_req;
 
-typedef struct s_coder
+typedef struct s_heap
 {
-	int	id;
-	pthread_t	thread;
-	int	last_compile_start;
-
-}	t_coder;
+	t_req	*arr; // array with all request
+	int		size; // actual size of arr;
+	int		max_capacity; // capacity 2 by default, only 2 coders for 1 dongle 
+}	t_heap;
 
 typedef struct s_dongle
 {
-	int				id;
-	pthread_mutex_t mutex;
-	pthread_cond_t	cond;
-	long			end_cooldown;
+	int				id; // dongle's id
+	pthread_mutex_t	mutex; //mutex dongle
+	pthread_cond_t	cond; // pthread cond for signal/broadcast
+	long			end_cooldown; // end of cooldown
+	int				available; // status available or not 
+	t_heap			heap; //waiting heap fifo edf 
 }	t_dongle;
 
-typedef struct s_args_cycle
+typedef struct s_coder
 {
-	int	id_coder;
-	struct s_dongle *dongle_left;
-	struct s_dongle *dongle_right;
-	struct s_data	*data;
-	bool			*stop_sim;
-}	t_args_cycle;
+	int			id; // coder's id
+	pthread_t	thread; // thread
+	long		last_compile_start; // last time the coder compile
+	int			compiles_done; // number of compile done
+	struct s_data	*data; // access to struct data
+}	t_coder;
 
-typedef struct s_queue
+typedef struct s_data
 {
-	int		coder_id;
-	long	deadline;
-}	t_queue;
+	int				n_coders;
+	int				t_burnout;
+	int				t_compile;
+	int				t_debug;
+	int				t_refactor;
+	int				n_compiles;
+	int				t_cooldown;
+	char			*scheduler;      // 'fifo' 'edf'
+	pthread_mutex_t	mutex_print;      // mutex print log
+	pthread_mutex_t	mutex_stop;       // mutex stop sim
+	pthread_mutex_t mutex_start;	// mutex start sim
+	int				stop_sim;		// 0 continue 1 stop
+	int				start_sim;		// 0 wait 1 start
+	t_dongle		*dongles;         // arr dongles
+}	t_data;
 
+// utils.c
+char	*ft_strcpy(char *str);
+
+// parser.c
 t_data	*store_data(int argc, char **argv);
-
 #endif

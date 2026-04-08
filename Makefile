@@ -1,7 +1,7 @@
-CFLAGS= gcc -Wall -Wextra -Werror -pthread
+CFLAGS= gcc -Wall -Wextra -Werror -pthread -g
 
 
-SRC= main.c parser.c
+SRC= main.c parser.c utils.c
 
 OBJ= $(SRC:.c=.o)
 

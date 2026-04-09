@@ -13,6 +13,16 @@
 #include "codexion.h"
 #include <unistd.h>
 
+void	free_data(t_data *data)
+{
+	pthread_mutex_destroy(&data->mutex_print);
+	pthread_mutex_destroy(&data->mutex_start);
+	pthread_mutex_destroy(&data->mutex_stop);
+	pthread_cond_destroy(&data->cond_start);
+	free_dongles(data->dongles, data->n_coders);
+	free(data);
+}
+
 int	main(int argc, char **argv)
 {
 	t_coder *coders;
@@ -38,6 +48,8 @@ int	main(int argc, char **argv)
 		pthread_join(coders[i].thread, NULL);
 		i++;
 	}
+	pthread_join(data->monitor, NULL);
 	free(coders);
+	free_data(data);
 	return 0;
 }

@@ -1,5 +1,21 @@
 #include "codexion.h"
 
+void    free_dongles(t_dongle *dongles, int n_dongles)
+{
+    int i;
+
+    i = 0;
+    while (i < n_dongles)
+    {
+        free_heap(dongles[i].heap);
+        pthread_mutex_destroy(&dongles[i].mutex);
+        pthread_cond_destroy(&dongles[i].cond);
+        i++;
+    }
+    free(dongles);
+    return ;
+}
+
 int init_dongles(t_data *data)
 {
     int i;

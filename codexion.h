@@ -84,9 +84,11 @@ int    init_coders(t_coder *coders, t_data *data);
 
 // dongle.c
 int init_dongles(t_data *data);
+void    free_dongles(t_dongle *dongles, int n_dongles);
 
 // heap.c
 t_heap  *init_heap();
+void    free_heap(t_heap *heap);
 
 // request.c 
 t_req   *init_req_arr(int max_capacity);

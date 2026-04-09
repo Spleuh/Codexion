@@ -1,5 +1,13 @@
 #include "codexion.h"
 
+void    free_heap(t_heap *heap)
+{
+    pthread_mutex_destroy(&heap->mutex_heap);
+    free(heap->arr);
+    free(heap);
+    return ;
+}
+
 t_heap  *init_heap()
 {
     t_heap  *heap;

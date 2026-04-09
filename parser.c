@@ -63,10 +63,10 @@ t_data	*store_data(int argc, char **argv)
 	data->t_refactor = atoi(argv[5]);
 	data->n_compiles = atoi(argv[6]);
 	data->t_cooldown = atoi(argv[7]);
-	data->scheduler = ft_strcpy(argv[8]);
 	data->stop_sim = 0;
 	data->start_sim = 0;
 	init_dongles(data);
+	data->scheduler = ft_strcpy(argv[8]);
 	if (!data->scheduler)
 	{
 		free(data);

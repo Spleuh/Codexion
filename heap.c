@@ -46,41 +46,47 @@ int check_req(t_heap *heap, int id)
     return (0);
 }
 
-void    remove_req(t_heap *heap, int id)
+int    add_request(t_coder *coder, t_dongle *first, t_dongle *second)
+{
+    t_req   req_first;
+    t_req   req_second;
+
+    pthread_mutex_lock(&first->heap->mutex_heap);
+    pthread_mutex_lock(&second->heap->mutex_heap);
+    req_first.coder_id = coder->id;
+    req_first.deadline = get_deadline(coder);
+    req_second.coder_id = coder->id;
+    req_second.deadline = get_deadline(coder);
+    first->heap->arr[get_last_i(first->heap->arr)] = req_first;
+    second->heap->arr[get_last_i(second->heap->arr)] = req_second;
+    pthread_mutex_unlock(&first->heap->mutex_heap);
+    pthread_mutex_unlock(&second->heap->mutex_heap);
+    return (0);
+}
+
+void    remove_req(t_coder *coder, t_dongle *dongle)
 {
     int i;
     int j;
     t_req  *new_arr;
 
-    new_arr = malloc(sizeof(t_req) * heap->max_capacity);
+    new_arr = malloc(sizeof(t_req) * dongle->heap->max_capacity);
     if (!new_arr)
         return ;
+    pthread_mutex_lock(&dongle->heap->mutex_heap);
     i = 0;
     j = 0;
-    while (i < heap->size)
+    while (i < dongle->heap->size)
     {
-        if (heap->arr[i].coder_id != id)
-            new_arr[j] = heap->arr[i];
+        if (dongle->heap->arr[i].coder_id != coder->id)
+            new_arr[j] = dongle->heap->arr[i];
         else
             j--;
         j++;
         i++;
     }
-    free(heap->arr);
-    heap->arr = new_arr;
-    return ;
-}
-
-void    heap_add_req(t_heap *heap, t_req request)
-{
-    int i;
-
-    i = 0;
-    if (check_req(heap, request.coder_id))
-        return ;
-    while (i < heap->size)
-        i++;
-    heap->arr[i] = request;
-    heap->size += 1;
+    free(dongle->heap->arr);
+    dongle->heap->arr = new_arr;
+    pthread_mutex_unlock(&dongle->heap->mutex_heap);
     return ;
 }

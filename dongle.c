@@ -30,6 +30,7 @@ int init_dongles(t_data *data)
         data->dongles[i].end_cooldown = 0;
         data->dongles[i].available = 1;
         data->dongles[i].heap = init_heap();
+        data->dongles[i].id_priority = -1;
         if (!data->dongles[i].heap)
             break;
         if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)

@@ -16,7 +16,7 @@ void    *monitoring(void *arg)
         i = 0;
         all_done = 1;
         while (i < coders[0].data->n_coders)
-        {
+        {   
             if (coders[i].compiles_done < coders[0].data->n_compiles)
                 all_done = 0;
             i++;

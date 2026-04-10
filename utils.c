@@ -32,8 +32,20 @@ char    *ft_ltoa(long l)
 {
     char	*result;
     int		i;
+	int		size;
 
-    result = malloc(sizeof(char) * (get_size_digit(l) + 1));
+	if (l == 0)
+	{
+		result = malloc(sizeof(char) * 2);
+		if (!result)
+			return (NULL);
+		result[0]='0';
+		result[1]='\n';
+		return (result);
+	}
+
+	size = get_size_digit(l);
+    result = malloc(sizeof(char) * (size + 1));
     if (!result)
 		return (NULL);
 	i = 0;

@@ -1,8 +1,5 @@
 #include "codexion.h"
 
-
-
-
 long    get_deadline(t_coder *coder)
 {
     long    result;
@@ -21,18 +18,23 @@ int     check_available(int coder_id, t_dongle *first, t_dongle *second)
 }
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 {
-
+    long    timestamp;
 
     while (!check_available(coder->id, first, second))
     {
         pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_entry);
     }
+
     pthread_mutex_lock(&first->mutex);
     pthread_mutex_lock(&second->mutex);
     first->available = 0;
     second->available = 0;
-    printf("%d has taken dongle %d\n", coder->id, first->id);
-    printf("%d has taken dongle %d\n", coder->id, second->id);
+
+    pthread_mutex_lock(&coder->data->mutex_print);
+    timestamp = get_timestamp() - coder->data->timestamp_start;
+    printf("%ld %d has taken dongle %d\n",timestamp, coder->id, first->id);
+    printf("%ld %d has taken dongle %d\n",timestamp, coder->id, second->id);
+    pthread_mutex_unlock(&coder->data->mutex_print);
 }
 
 void    release_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
@@ -46,32 +48,44 @@ void    release_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 
 void    debug(t_coder *coder)
 {
-    char    *timestamp;
-    char    *id_coder;
-    char    *str;
+    // char    *timestamp;
+    // char    *id_coder;
+    // char    *str;
 
-    id_coder = ft_ltoa((long)coder->id);
-    if (!id_coder)
-        return ;
-    timestamp = ft_ltoa((get_timestamp() - coder->data->timestamp_start));
-    if (!timestamp)
-        return ;
-    str = ft_strjoin(timestamp, " ");
-    if (!str)
-        return ;
-    str = ft_strjoin(str, id_coder);
-    if (!str)
-        return ;
-    str = ft_strjoin(str, " is debugging");
-    if (!str)
-        return ;
-    print(coder->data, str);
+    // id_coder = ft_ltoa((long)coder->id);
+    // if (!id_coder)
+    //     return ;
+    // timestamp = ft_ltoa((get_timestamp() - coder->data->timestamp_start));
+    // if (!timestamp)
+    //     return ;
+    // str = ft_strjoin(timestamp, " ");
+    // if (!str)
+    //     return ;
+    // str = ft_strjoin(str, id_coder);
+    // if (!str)
+    //     return ;
+    // str = ft_strjoin(str, " is debugging");
+    // if (!str)
+    //     return ;
+    // print(coder->data, str);
+
+    long    timestamp;
+
+    timestamp = get_timestamp() - coder->data->timestamp_start;
+    pthread_mutex_lock(&coder->data->mutex_print);
+    printf("%ld %d is debugging\n",timestamp, coder->id);
+    pthread_mutex_unlock(&coder->data->mutex_print);
     usleep(coder->data->t_debug * 1000);
 }
 
 void    refactor(t_coder *coder)
 {
-    printf("%ld %d is refactoring\n", get_timestamp(), coder->id);
+    long    timestamp;
+
+    pthread_mutex_lock(&coder->data->mutex_print);
+    timestamp = get_timestamp() - coder->data->timestamp_start;
+    printf("%ld %d is refactoring\n", timestamp, coder->id);
+    pthread_mutex_unlock(&coder->data->mutex_print);
     usleep(coder->data->t_refactor * 1000);
 }
 
@@ -85,10 +99,9 @@ void   compile(t_coder *coder)
     t_dongle *first = left->id < right->id ? left : right;
     t_dongle *second = left->id < right->id ? right : left;
 
-    pthread_mutex_lock(&coder->data->mutex_entry);
+
     take_dongles(coder, first, second);
     pthread_mutex_unlock(&coder->data->mutex_entry);
-
     coder->last_compile_start = get_timestamp();
     usleep(coder->data->t_compile * 1000);
     coder->compiles_done++;

@@ -69,6 +69,7 @@ void    print(t_data *data, char *str);
 long    get_timestamp();
 char    *ft_ltoa(long l);
 char	*ft_strjoin(char *s1, char *s2);
+void	print_test();
 
 // parser.c
 t_data	*store_data(int argc, char **argv);
@@ -86,4 +87,5 @@ void    free_dongles(t_dongle *dongles, int n_dongles);
 int init_monitor(t_coder *coder);
 
 // scheduler.c
+int condition_fifo(t_dongle *first, t_dongle *second);
 #endif

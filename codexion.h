@@ -18,31 +18,17 @@
 # include <string.h>
 # include <stdio.h>
 # include <unistd.h>
+# include <sys/time.h>
 
-typedef struct s_req // struct request
-{
-	int		coder_id; // request from coder id
-	long	deadline; // last compile + t_burnout
-	long	timestamp;
-}	t_req;
 
-typedef struct s_heap
-{
-	pthread_mutex_t mutex_heap;
-	t_req	*arr; // array with all request
-	int		size; // actual size of arr;
-	int		max_capacity; // capacity 2 by default, only 2 coders for 1 dongle 
-}	t_heap;
 
 typedef struct s_dongle
 {
 	int				id; // dongle's id
 	int				id_priority; //coder's id
 	pthread_mutex_t	mutex; //mutex dongle
-	pthread_cond_t	cond; // pthread cond for signal/broadcast
 	long			end_cooldown; // end of cooldown
 	int				available; // status available or not 
-	t_heap			*heap; //waiting heap fifo edf 
 }	t_dongle;
 
 typedef struct s_coder
@@ -64,6 +50,7 @@ typedef struct s_data
 	int				n_compiles;
 	int				t_cooldown;
 	char			*scheduler;      // 'fifo' 'edf'
+	long			timestamp_start;
 	pthread_mutex_t	mutex_print;      // mutex print log
 	pthread_mutex_t	mutex_stop;       // mutex stop sim
 	pthread_mutex_t mutex_start;	// mutex start sim
@@ -78,13 +65,16 @@ typedef struct s_data
 
 // utils.c
 char	*ft_strcpy(char *str);
+void    print(t_data *data, char *str);
+long    get_timestamp();
+char    *ft_ltoa(long l);
+char	*ft_strjoin(char *s1, char *s2);
 
 // parser.c
 t_data	*store_data(int argc, char **argv);
 
 // coder.c
 int    init_coders(t_coder *coders, t_data *data);
-int get_last_i(t_req *arr);
 long    get_deadline(t_coder *coder);
 int     check_available(int coder_id, t_dongle *first, t_dongle *second);
 
@@ -92,18 +82,8 @@ int     check_available(int coder_id, t_dongle *first, t_dongle *second);
 int init_dongles(t_data *data);
 void    free_dongles(t_dongle *dongles, int n_dongles);
 
-// heap.c
-t_heap  *init_heap();
-int    add_request(t_coder *coder, t_dongle **first, t_dongle **second);
-void    remove_req(t_coder *coder, t_dongle **dongle);
-void    free_heap(t_heap *heap);
-
-// request.c 
-t_req   *init_req_arr(int max_capacity);
-
 // monitor.c
 int init_monitor(t_coder *coder);
 
 // scheduler.c
-int	get_id_edf(t_heap *heap);
 #endif

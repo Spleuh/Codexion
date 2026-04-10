@@ -43,8 +43,8 @@ void    print_test(int i)
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 {
 
-    add_request(coder, first, second);
-
+    add_request(coder, &first, &second);
+    printf("first heap arr: %d\n", first->heap->arr[0].coder_id);
     pthread_mutex_lock(&coder->data->mutex_entry);
     int i;
 
@@ -64,24 +64,16 @@ void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
     printf("%d has taken dongle %d\n", coder->id, second->id);
 }
 
-void    release_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
+void    release_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 {
     remove_req(coder, first);
     remove_req(coder, second);
-    sort_edf(first->heap);
-    sort_edf(second->heap);
-    if (first->heap->arr)
-        first->id_priority = first->heap->arr[0].coder_id;
-    else
-        first->id_priority = -1;
-    if (second->heap->arr)
-        second->id_priority = second->heap->arr[0].coder_id;
-    else
-        second->id_priority = -1;
-    first->available = 1;
-    second->available = 1;
-    pthread_mutex_unlock(&first->mutex);
-    pthread_mutex_unlock(&second->mutex);
+    (*first)->id_priority = get_id_edf((*first)->heap);
+    (*second)->id_priority = get_id_edf((*second)->heap);
+    (*first)->available = 1;
+    (*second)->available = 1;
+    pthread_mutex_unlock(&(*first)->mutex);
+    pthread_mutex_unlock(&(*second)->mutex);
     pthread_cond_broadcast(&coder->data->cond_entry);
 }
 
@@ -112,7 +104,7 @@ void   compile(t_coder *coder)
     usleep(coder->data->t_compile * 1000);
     coder->compiles_done++;
 
-    release_dongles(coder, first, second);
+    release_dongles(coder, &first, &second);
 }
 
 void    *routine(void *arg)

@@ -1,28 +1,30 @@
 #include "codexion.h"
 
 
-
-int    sort_edf(t_heap *heap)
+int	get_id_edf(t_heap *heap)
 {
-    t_req   tmp;
-    int     i;
-    int     j;
+	int	id;
+	int	i;
+	long	tmp;
 
-    i = 0;
-    while (i < heap->size)
-    {
-        j = i + 1;
-        while (j < heap->size)
-        {
-            if (heap->arr[i].deadline > heap->arr[j].deadline)
-            {
-                tmp = heap->arr[j];
-                heap->arr[j] = heap->arr[i];
-                heap->arr[i] = tmp;
-            }
-            j++;
-        }
-        i++;
-    }
-    return (0);
+	id = -1;
+	i = 0;
+	while (i < heap->size)
+	{
+		printf("arr[i] id coder: %d\n", heap->arr[i].coder_id);
+		if (id < 0)
+		{
+			id = heap->arr[i].coder_id;
+			tmp = heap->arr[i].deadline;
+		}
+		else if (tmp < heap->arr[i].deadline)
+		{
+			id = heap->arr[i].coder_id;
+			tmp = heap->arr[i].deadline;
+		}
+		i++;
+	}
+	printf("get id edf : %d\n", id);
+	return (id);
 }
+

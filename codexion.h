@@ -94,8 +94,8 @@ void    free_dongles(t_dongle *dongles, int n_dongles);
 
 // heap.c
 t_heap  *init_heap();
-int    add_request(t_coder *coder, t_dongle *first, t_dongle *second);
-void    remove_req(t_coder *coder, t_dongle *dongle);
+int    add_request(t_coder *coder, t_dongle **first, t_dongle **second);
+void    remove_req(t_coder *coder, t_dongle **dongle);
 void    free_heap(t_heap *heap);
 
 // request.c 
@@ -105,5 +105,5 @@ t_req   *init_req_arr(int max_capacity);
 int init_monitor(t_coder *coder);
 
 // scheduler.c
-int    sort_edf(t_heap *heap);
+int	get_id_edf(t_heap *heap);
 #endif

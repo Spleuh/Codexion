@@ -25,7 +25,10 @@ int     get_size_digit(long l)
 
     i = 0;
     while (l / 10 || l % 10)
+	{
+		l = l / 10;
         i++;
+	}
     return (i);
 }
 char    *ft_ltoa(long l)
@@ -52,6 +55,7 @@ char    *ft_ltoa(long l)
     while (l / 10 || l % 10)
 	{
 		result[i] = (l % 10) + 48;
+		l = l / 10;
 		i++;
 	}
 	result[i] = '\n';

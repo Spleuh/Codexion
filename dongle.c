@@ -28,8 +28,28 @@ int init_dongles(t_data *data)
         data->dongles[i].end_cooldown = 0;
         data->dongles[i].available = 1;
         data->dongles[i].id_priority = -1;
+        data->dongles[i].lst_cmp_0 = -1;
+        data->dongles[i].lst_cmp_1 = -1;
         if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
             break;
+        if (pthread_mutex_init(&data->dongles[i].mutex_lst_cmp, NULL) != 0)
+        {
+            pthread_mutex_destroy(&data->dongles[i].mutex);
+            break;
+        }
+        if (pthread_mutex_init(&data->dongles[i].mutex_available, NULL) != 0)
+        {
+            pthread_mutex_destroy(&data->dongles[i].mutex);
+            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
+            break;
+        }
+        if (pthread_mutex_init(&data->dongles[i].mutex_id_priority, NULL) != 0)
+        {
+            pthread_mutex_destroy(&data->dongles[i].mutex);
+            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
+            pthread_mutex_destroy(&data->dongles[i].mutex_available);
+            break;
+        }
         i++;
     }
     if (i < data->n_coders)
@@ -38,6 +58,9 @@ int init_dongles(t_data *data)
         {   
             i--;
             pthread_mutex_destroy(&data->dongles[i].mutex);
+            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
+            pthread_mutex_destroy(&data->dongles[i].mutex_available);
+            pthread_mutex_destroy(&data->dongles[i].mutex_id_priority);
         }
         free(data->dongles);
         return (1);

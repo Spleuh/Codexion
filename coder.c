@@ -12,30 +12,59 @@ int     check_available(int coder_id, t_dongle *first, t_dongle *second)
 {
     int result;
 
-    result = 0;
-    pthread_mutex_lock(&first->mutex);
-    pthread_mutex_lock(&second->mutex);
-    if ((first->id_priority == -1 || first->id_priority == coder_id) && (second->id_priority == -1 || second->id_priority == coder_id))
-        result = 1;
+    (void)coder_id;
+    result = 1;
+    pthread_mutex_lock(&first->mutex_available);
+    pthread_mutex_lock(&second->mutex_available);
+
     if (!first->available || !second->available)
         result = 0;
-    pthread_mutex_unlock(&first->mutex);
-    pthread_mutex_unlock(&second->mutex);
+    pthread_mutex_unlock(&first->mutex_available);
+    pthread_mutex_unlock(&second->mutex_available);
+    return (result);
+}
+
+int     edf(int coder_id, t_dongle *first, t_dongle *second)
+{
+    int result;
+
+    result = check_available(coder_id, first, second);
+    if (result == 0)
+        return (result);
+    pthread_mutex_lock(&first->mutex_id_priority);
+    pthread_mutex_lock(&second->mutex_id_priority);
+    if (first->id_priority != -1 && first->id_priority != coder_id && second->id_priority != -1 && second->id_priority != coder_id)
+        result = 0;
+    pthread_mutex_unlock(&first->mutex_id_priority);
+    pthread_mutex_unlock(&second->mutex_id_priority);
     return (result);
 }
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 {
     long    timestamp;
-
-    while (!check_available(coder->id, first, second))
+    int (*f)(int, t_dongle*, t_dongle*);
+    if (strcmp(coder->data->scheduler, "fifo") == 0)
+        f = &check_available;
+    else if (strcmp(coder->data->scheduler, "edf") == 0)
+    {
+        f = &edf;
+    }
+    
+    while (!f(coder->id, first, second))
     {
         pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_entry);
     }
 
     pthread_mutex_lock(&first->mutex);
     pthread_mutex_lock(&second->mutex);
+
+    pthread_mutex_lock(&first->mutex_available);
+    pthread_mutex_lock(&second->mutex_available);
     first->available = 0;
     second->available = 0;
+
+    pthread_mutex_unlock(&first->mutex_available);
+    pthread_mutex_unlock(&second->mutex_available);
 
     pthread_mutex_lock(&coder->data->mutex_print);
     timestamp = get_timestamp() - coder->data->timestamp_start;
@@ -46,8 +75,13 @@ void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 
 void    release_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 {
+    pthread_mutex_lock(&(*first)->mutex_available);
+    pthread_mutex_lock(&(*second)->mutex_available);
     (*first)->available = 1;
     (*second)->available = 1;
+    pthread_mutex_unlock(&(*first)->mutex_available);
+    pthread_mutex_unlock(&(*second)->mutex_available);
+
     pthread_mutex_unlock(&(*first)->mutex);
     pthread_mutex_unlock(&(*second)->mutex);
     pthread_cond_broadcast(&coder->data->cond_entry);
@@ -91,13 +125,24 @@ void   compile(t_coder *coder)
     pthread_mutex_lock(&coder->data->mutex_entry);
     take_dongles(coder, first, second);
     pthread_mutex_unlock(&coder->data->mutex_entry);
-    coder->last_compile_start = get_timestamp();
+    coder->last_compile_start = get_timestamp() - coder->data->timestamp_start;
+    pthread_mutex_lock(&first->mutex_lst_cmp);
+    if (coder->id % 2)
+        first->lst_cmp_1 = coder->last_compile_start;
+    else
+        first->lst_cmp_0 = coder->last_compile_start;
+    if (coder->id % 2)
+        second->lst_cmp_1 = coder->last_compile_start;
+    else
+        second->lst_cmp_0 = coder->last_compile_start;
+    pthread_mutex_unlock(&first->mutex_lst_cmp);
     usleep(coder->data->t_compile * 1000);
     pthread_mutex_lock(&coder->mutex_compiles_done);
     coder->compiles_done++;
     pthread_mutex_unlock(&coder->mutex_compiles_done);
 
     release_dongles(coder, &first, &second);
+    printf("first available: %d second available: %d\n", first->available, second->available);
 }
 
 void    *routine(void *arg)

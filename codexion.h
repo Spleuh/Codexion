@@ -26,7 +26,13 @@ typedef struct s_dongle
 {
 	int				id; // dongle's id
 	int				id_priority; //coder's id
+    int				n_dongles;
+	long			lst_cmp_0;
+	long			lst_cmp_1;
 	pthread_mutex_t	mutex; //mutex dongle
+	pthread_mutex_t	mutex_lst_cmp; //mutex dongle
+	pthread_mutex_t	mutex_available; //mutex dongle
+	pthread_mutex_t	mutex_id_priority; //mutex dongle
 	long			end_cooldown; // end of cooldown
 	int				available; // status available or not 
 }	t_dongle;
@@ -59,6 +65,7 @@ typedef struct s_data
 	pthread_cond_t	cond_entry;		// check condition priority EDF;
 	pthread_cond_t	cond_start;
 	pthread_t		monitor;
+	pthread_t		thread_planner;
 	int				stop_sim;		// 0 continue 1 stop
 	int				start_sim;		// 0 wait 1 start
 	t_dongle		*dongles;         // arr dongles
@@ -89,4 +96,5 @@ int init_monitor(t_coder *coder);
 
 // scheduler.c
 int condition_fifo(t_dongle *first, t_dongle *second);
+int init_scheduler(t_data *data);
 #endif

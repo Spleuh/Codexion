@@ -38,6 +38,7 @@ int	main(int argc, char **argv)
 		return 1;
 	init_coders(coders, data);
 	init_monitor(coders);
+	init_scheduler(data);
 	pthread_mutex_lock(&data->mutex_start);
     data->start_sim = 1;
     pthread_mutex_unlock(&data->mutex_start);
@@ -51,7 +52,8 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	pthread_join(data->monitor, NULL);
-	usleep(1000);
+	pthread_join(data->thread_planner, NULL);
+	//usleep(1000);
 	free(coders);
 	free_data(data);
 	return 0;

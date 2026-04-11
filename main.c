@@ -20,7 +20,9 @@ void	free_data(t_data *data)
 	pthread_mutex_destroy(&data->mutex_stop);
 	pthread_cond_destroy(&data->cond_start);
 	free_dongles(data->dongles, data->n_coders);
-	free(data);
+	free(data->scheduler);
+	if (data)
+		free(data);
 }
 
 int	main(int argc, char **argv)

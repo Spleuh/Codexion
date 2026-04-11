@@ -10,19 +10,18 @@ long    get_deadline(t_coder *coder)
 
 int     check_available(int coder_id, t_dongle *first, t_dongle *second)
 {
+    int result;
+
+    result = 0;
     pthread_mutex_lock(&first->mutex);
-    if (!first->available || !second->available)
-    {
-        pthread_mutex_unlock(&first->mutex);
-        return (0);
-    }
+    pthread_mutex_lock(&second->mutex);
     if ((first->id_priority == -1 || first->id_priority == coder_id) && (second->id_priority == -1 || second->id_priority == coder_id))
-    {
-        pthread_mutex_unlock(&first->mutex);
-        return (1);
-    }
+        result = 1;
+    if (!first->available || !second->available)
+        result = 0;
     pthread_mutex_unlock(&first->mutex);
-    return (0);
+    pthread_mutex_unlock(&second->mutex);
+    return (result);
 }
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 {
@@ -141,6 +140,8 @@ int    init_coders(t_coder *coders, t_data *data)
         coders[i].data = data;
         coders[i].last_compile_start = 0;
         coders[i].compiles_done = 0;
+        if (pthread_mutex_init(&coders[i].mutex_compiles_done, NULL) != 0)
+            break;
         tmp = pthread_create(&coders[i].thread, NULL, routine, &coders[i]);
         i++;
     }
@@ -153,6 +154,7 @@ int    init_coders(t_coder *coders, t_data *data)
         pthread_cond_broadcast(&data->cond_start);
         while(i >= 0)
         {
+		    pthread_mutex_destroy(&coders[i].mutex_compiles_done);
             pthread_join(coders[i].thread, NULL);
             i--;
         }

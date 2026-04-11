@@ -46,7 +46,17 @@ int	parser(int argc, char **argv)
 		return (-1);
 	return result;
 }
-
+int	cond_init(t_data *data)
+{
+	if (pthread_cond_init(&data->cond_entry, NULL) != 0)
+		return (1);
+	if (pthread_cond_init(&data->cond_start, NULL) != 0)
+	{
+		pthread_cond_destroy(&data->cond_entry);
+		return (1);
+	}
+	return (0);
+}
 t_data	*store_data(int argc, char **argv)
 {
 	t_data	*data;
@@ -55,6 +65,8 @@ t_data	*store_data(int argc, char **argv)
 		return (NULL);
 	data = malloc(sizeof(t_data));
 	if (!data)
+		return (NULL);
+	if (cond_init(data))
 		return (NULL);
 	data->n_coders = atoi(argv[1]);
 	data->t_burnout = atoi(argv[2]);
@@ -91,7 +103,14 @@ t_data	*store_data(int argc, char **argv)
 		free(data);
 		return (NULL);
 	}
-	
+	if (pthread_mutex_init(&data->mutex_entry, NULL) != 0)
+	{
+		pthread_mutex_destroy(&data->mutex_print);
+		pthread_mutex_destroy(&data->mutex_stop);
+		pthread_mutex_destroy(&data->mutex_start);
+		free(data);
+		return (NULL);
+	}
 	return (data);
 }
 

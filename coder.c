@@ -10,10 +10,18 @@ long    get_deadline(t_coder *coder)
 
 int     check_available(int coder_id, t_dongle *first, t_dongle *second)
 {
+    pthread_mutex_lock(&first->mutex);
     if (!first->available || !second->available)
+    {
+        pthread_mutex_unlock(&first->mutex);
         return (0);
+    }
     if ((first->id_priority == -1 || first->id_priority == coder_id) && (second->id_priority == -1 || second->id_priority == coder_id))
+    {
+        pthread_mutex_unlock(&first->mutex);
         return (1);
+    }
+    pthread_mutex_unlock(&first->mutex);
     return (0);
 }
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
@@ -48,26 +56,7 @@ void    release_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 
 void    debug(t_coder *coder)
 {
-    // char    *timestamp;
-    // char    *id_coder;
-    // char    *str;
 
-    // id_coder = ft_ltoa((long)coder->id);
-    // if (!id_coder)
-    //     return ;
-    // timestamp = ft_ltoa((get_timestamp() - coder->data->timestamp_start));
-    // if (!timestamp)
-    //     return ;
-    // str = ft_strjoin(timestamp, " ");
-    // if (!str)
-    //     return ;
-    // str = ft_strjoin(str, id_coder);
-    // if (!str)
-    //     return ;
-    // str = ft_strjoin(str, " is debugging");
-    // if (!str)
-    //     return ;
-    // print(coder->data, str);
 
     long    timestamp;
 
@@ -100,11 +89,14 @@ void   compile(t_coder *coder)
     t_dongle *second = left->id < right->id ? right : left;
 
 
+    pthread_mutex_lock(&coder->data->mutex_entry);
     take_dongles(coder, first, second);
     pthread_mutex_unlock(&coder->data->mutex_entry);
     coder->last_compile_start = get_timestamp();
     usleep(coder->data->t_compile * 1000);
+    pthread_mutex_lock(&coder->mutex_compiles_done);
     coder->compiles_done++;
+    pthread_mutex_unlock(&coder->mutex_compiles_done);
 
     release_dongles(coder, &first, &second);
 }
@@ -112,16 +104,24 @@ void   compile(t_coder *coder)
 void    *routine(void *arg)
 {
     t_coder *coder = (t_coder *)arg;
+    int     stop;
 
     pthread_mutex_lock(&coder->data->mutex_start);
     while (!coder->data->start_sim)
         pthread_cond_wait(&coder->data->cond_start, &coder->data->mutex_start);
     pthread_mutex_unlock(&coder->data->mutex_start);
-    while (!coder->data->stop_sim)
+    pthread_mutex_lock(&coder->data->mutex_stop);
+    stop = coder->data->stop_sim;
+    pthread_mutex_unlock(&coder->data->mutex_stop);
+    while (!stop)
     {
         compile(coder);
         debug(coder);
         refactor(coder);
+        pthread_mutex_lock(&coder->data->mutex_stop);
+        stop = coder->data->stop_sim;
+        pthread_mutex_unlock(&coder->data->mutex_stop);
+
     }
     return (NULL);
 }

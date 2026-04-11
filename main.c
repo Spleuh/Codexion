@@ -49,6 +49,7 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	pthread_join(data->monitor, NULL);
+	usleep(1000);
 	free(coders);
 	free_data(data);
 	return 0;

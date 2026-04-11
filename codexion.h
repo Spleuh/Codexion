@@ -36,6 +36,7 @@ typedef struct s_coder
 	int			id; // coder's id
 	pthread_t	thread; // thread
 	long		last_compile_start; // last time the coder compile
+	pthread_mutex_t	mutex_compiles_done;
 	int			compiles_done; // number of compile done
 	struct s_data	*data; // access to struct data
 }	t_coder;

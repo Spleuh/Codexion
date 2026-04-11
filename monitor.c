@@ -5,20 +5,27 @@ void    *monitoring(void *arg)
     t_coder  *coders;
     int     i;
     int     all_done;
+    int     stop;
 
     coders = (t_coder *)arg;
     pthread_mutex_lock(&coders[0].data->mutex_start);
     while (!coders[0].data->start_sim)
         pthread_cond_wait(&coders[0].data->cond_start, &coders[0].data->mutex_start);
     pthread_mutex_unlock(&coders[0].data->mutex_start);
-    while (!coders[0].data->stop_sim)
+
+    pthread_mutex_lock(&coders[0].data->mutex_stop);
+    stop = coders[0].data->stop_sim;
+    pthread_mutex_unlock(&coders[0].data->mutex_stop);
+    while (!stop)
     {
         i = 0;
         all_done = 1;
         while (i < coders[0].data->n_coders)
         {   
+            pthread_mutex_lock(&coders[i].mutex_compiles_done);
             if (coders[i].compiles_done < coders[0].data->n_compiles)
                 all_done = 0;
+            pthread_mutex_unlock(&coders[i].mutex_compiles_done);
             i++;
         }
         if (all_done == 1)
@@ -27,6 +34,9 @@ void    *monitoring(void *arg)
             coders[0].data->stop_sim = 1;
             pthread_mutex_unlock(&coders[0].data->mutex_stop);
         }
+        pthread_mutex_lock(&coders[0].data->mutex_stop);
+        stop = coders[0].data->stop_sim;
+        pthread_mutex_unlock(&coders[0].data->mutex_stop);
     }
     return (NULL);
 }

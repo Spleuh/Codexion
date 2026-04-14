@@ -20,34 +20,54 @@
 # include <unistd.h>
 # include <sys/time.h>
 
+typedef struct s_data t_data;
 
 
-typedef struct s_dongle
+typedef	struct	t_dongle
 {
+	pthread_mutex_t	mutex_dongle; //mutex dongle
 	int				id; // dongle's id
-	int				id_priority; //coder's id
-    int				n_dongles;
-	long			lst_cmp_0;
-	long			lst_cmp_1;
-	pthread_mutex_t	mutex; //mutex dongle
-	pthread_mutex_t	mutex_lst_cmp; //mutex dongle
-	pthread_mutex_t	mutex_available; //mutex dongle
-	pthread_mutex_t	mutex_id_priority; //mutex dongle
-	long			end_cooldown; // end of cooldown
-	int				available; // status available or not 
+	pthread_mutex_t	mutex_state;
+	int				available;
+	int				id_priority;
+	long			end_cooldown;
 }	t_dongle;
 
 typedef struct s_coder
 {
-	int			id; // coder's id
-	pthread_t	thread; // thread
-	long		last_compile_start; // last time the coder compile
-	pthread_mutex_t	mutex_compiles_done;
-	int			compiles_done; // number of compile done
+	pthread_t		thread_coder; // thread
+	pthread_mutex_t	mutex_coder;
+	int				id; // coder's id
+	int				compiles_done; // number of compile done
+	long			last_compile_start; // last time the coder compile
 	struct s_data	*data; // access to struct data
 }	t_coder;
 
-typedef struct s_data
+typedef	struct	s_monitor
+{
+	pthread_t		thread_monitor;
+	t_coder			*coders;
+	t_data			*data;
+}	t_monitor;
+
+typedef struct	s_scheduler
+{
+	pthread_t	thread_scheduler;
+	t_dongle	*dongles;
+	t_data		*data;
+}	t_scheduler;
+
+// typedef struct s_mutex_env
+// {
+// 	pthread_mutex_t	mutex_print;
+// 	pthread_mutex_t	mutex_stop;
+// 	pthread_mutex_t	mutex_start;
+// 	pthread_mutex_t	mutex_entry;
+// 	pthread_mutex_t	mutex_cancel;
+
+// }	t_mutex_env;
+
+typedef struct	s_args
 {
 	int				n_coders;
 	int				t_burnout;
@@ -56,45 +76,54 @@ typedef struct s_data
 	int				t_refactor;
 	int				n_compiles;
 	int				t_cooldown;
-	char			*scheduler;      // 'fifo' 'edf'
+	char			*schedule;      // 'fifo' 'edf'
+}	t_args;
+
+typedef struct s_data
+{
+
+	pthread_mutex_t	mutex_data; // to protect stop start cancel sim;
+	// t_mutex_env			*mutex_env;
 	long			timestamp_start;
-	pthread_mutex_t	mutex_print;      // mutex print log
-	pthread_mutex_t	mutex_stop;       // mutex stop sim
-	pthread_mutex_t mutex_start;	// mutex start sim
-	pthread_mutex_t mutex_entry;	// global mutex
 	pthread_cond_t	cond_entry;		// check condition priority EDF;
 	pthread_cond_t	cond_start;
-	pthread_t		monitor;
-	pthread_t		thread_planner;
 	int				stop_sim;		// 0 continue 1 stop
 	int				start_sim;		// 0 wait 1 start
+	int				cancel_sim;
 	t_dongle		*dongles;         // arr dongles
+	t_coder			*coders;
+	t_args			*args;
 }	t_data;
 
 // utils.c
-char	*ft_strcpy(char *str);
-void    print(t_data *data, char *str);
-long    get_timestamp();
-char    *ft_ltoa(long l);
-char	*ft_strjoin(char *s1, char *s2);
-void	print_test();
+char    *ft_strcpy(char *str);
+void    cancel_sim(t_data *data);
+void    start_sim(t_data *data);
+int     get_cancel_sim(t_data *data);
 
 // parser.c
-t_data	*store_data(int argc, char **argv);
+int parser(int argc, char **argv);
 
-// coder.c
-int    init_coders(t_coder *coders, t_data *data);
-long    get_deadline(t_coder *coder);
-int     check_available(int coder_id, t_dongle *first, t_dongle *second);
+// data.c
+t_data  *init_data(char **argv);
+
+// scheduler.c 
+t_scheduler *init_scheduler(t_data *data);
+
+// monitor.c 
+t_monitor   *init_monitor(t_data *data);
+int         get_stop_sim(t_data *data);
 
 // dongle.c
-int init_dongles(t_data *data);
-void    free_dongles(t_dongle *dongles, int n_dongles);
+void    destroy_mutex_dongles(int i, t_dongle *dongles);
+t_dongle    *init_dongles(t_args *args);
+void    set_available(t_dongle *dongle, int i);
 
-// monitor.c
-int init_monitor(t_coder *coder);
+// coder.c
+void    free_coders(t_coder *coders, int i);
+t_coder *init_coders(t_data *data);
 
-// scheduler.c
-int condition_fifo(t_dongle *first, t_dongle *second);
-int init_scheduler(t_data *data);
+// args.c
+void    free_args(t_args *args);
+t_args  *init_args(char **argv);
 #endif

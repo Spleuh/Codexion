@@ -1,69 +1,62 @@
 #include "codexion.h"
 
-void    free_dongles(t_dongle *dongles, int n_dongles)
+void    set_available(t_dongle *dongle, int i)
 {
-    int i;
-
-    i = 0;
-    while (i < n_dongles)
-    {
-        pthread_mutex_destroy(&dongles[i].mutex);
-        i++;
-    }
-    free(dongles);
-    return ;
+    pthread_mutex_lock(&dongle->mutex_dongle);
+    dongle->available = i;
+    pthread_mutex_unlock(&dongle->mutex_dongle);
 }
 
-int init_dongles(t_data *data)
+void    free_dongles(int i, t_dongle *dongles)
+{
+    destroy_mutex_dongles(i, dongles);
+    free(dongles);
+}
+
+void    destroy_mutex_dongles(int i, t_dongle *dongles)
+{
+    i--;
+    while (i >= 0)
+    {
+        pthread_mutex_destroy(&dongles->mutex_dongle);
+        pthread_mutex_destroy(&dongles->mutex_state); 
+        i--;
+    }
+}
+
+int     init_mutex_dongles(t_dongle *dongles, int n)
 {
     int i;
 
     i = 0;
-    data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
-    if (!data->dongles)
-        return (1);
-    while (i < data->n_coders)
+    while (i < n)
     {
-        data->dongles[i].id = i;
-        data->dongles[i].end_cooldown = 0;
-        data->dongles[i].available = 1;
-        data->dongles[i].id_priority = -1;
-        data->dongles[i].lst_cmp_0 = -1;
-        data->dongles[i].lst_cmp_1 = -1;
-        if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
-            break;
-        if (pthread_mutex_init(&data->dongles[i].mutex_lst_cmp, NULL) != 0)
+        if (pthread_mutex_init(&dongles[i].mutex_dongle, NULL) != 0)
+            return (i++);
+        if (pthread_mutex_init(&dongles[i].mutex_state, NULL) != 0)
         {
-            pthread_mutex_destroy(&data->dongles[i].mutex);
-            break;
-        }
-        if (pthread_mutex_init(&data->dongles[i].mutex_available, NULL) != 0)
-        {
-            pthread_mutex_destroy(&data->dongles[i].mutex);
-            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
-            break;
-        }
-        if (pthread_mutex_init(&data->dongles[i].mutex_id_priority, NULL) != 0)
-        {
-            pthread_mutex_destroy(&data->dongles[i].mutex);
-            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
-            pthread_mutex_destroy(&data->dongles[i].mutex_available);
-            break;
+            pthread_mutex_destroy(&dongles[i].mutex_dongle);
+            return (i++);
         }
         i++;
     }
-    if (i < data->n_coders)
-    {
-        while(i > 0)
-        {   
-            i--;
-            pthread_mutex_destroy(&data->dongles[i].mutex);
-            pthread_mutex_destroy(&data->dongles[i].mutex_lst_cmp);
-            pthread_mutex_destroy(&data->dongles[i].mutex_available);
-            pthread_mutex_destroy(&data->dongles[i].mutex_id_priority);
-        }
-        free(data->dongles);
-        return (1);
-    }
     return (0);
+}
+t_dongle    *init_dongles(t_args *args)
+{
+    t_dongle *dongles;
+    int       i;
+
+    dongles = malloc(sizeof(t_dongle) * args->n_coders);
+    if (!dongles)
+        return (NULL);
+    while (i < args->n_coders)
+    {
+        dongles[i].id = i;
+        dongles[i].available = 1;
+        dongles[i].id_priority = -1;
+        dongles[i].end_cooldown = -1;
+        i++;
+    }
+    return (dongles);
 }

@@ -1,11 +1,17 @@
-#include "codexion.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsam <jsam@student.42lyon.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/13 21:43:11 by jsam              #+#    #+#             */
+/*   Updated: 2026/04/13 21:43:14 by jsam             ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-int check_arg_int(int time, int min)
-{
-	if (time < min || time > 2147483647)
-		return -1;
-	return 0;
-}
+
+#include "codexion.h"
 
 int check_int(char *arg)
 {
@@ -23,94 +29,25 @@ int check_int(char *arg)
 	return 0;
 }
 
-int	parser(int argc, char **argv)
-{
-	int i;
-	int result;
-	int	tmp;
 
-	result = 0;
-	if (argc != 9)
-		return -1;
-	i = 1;
-	while (i < 8)
-	{
-		if (check_int(argv[i]) < 0)
-			return (-1);
-		tmp = atoi(argv[i]);
-		if (tmp < 1 || (i == 1 && tmp < 2))
-			return (-1);
-		i++;
-	}
-	if (!result && strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
-		return (-1);
-	return result;
-}
-int	cond_init(t_data *data)
+int parser(int argc, char **argv)
 {
-	if (pthread_cond_init(&data->cond_entry, NULL) != 0)
-		return (1);
-	if (pthread_cond_init(&data->cond_start, NULL) != 0)
-	{
-		pthread_cond_destroy(&data->cond_entry);
-		return (1);
-	}
-	return (0);
-}
-t_data	*store_data(int argc, char **argv)
-{
-	t_data	*data;
+    int i;
+    int tmp;
 
-	if (parser(argc, argv) < 0)
-		return (NULL);
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	if (cond_init(data))
-		return (NULL);
-	data->n_coders = atoi(argv[1]);
-	data->t_burnout = atoi(argv[2]);
-	data->t_compile = atoi(argv[3]);
-	data->t_debug = atoi(argv[4]);
-	data->t_refactor = atoi(argv[5]);
-	data->n_compiles = atoi(argv[6]);
-	data->t_cooldown = atoi(argv[7]);
-	data->timestamp_start = get_timestamp();
-	data->stop_sim = 0;
-	data->start_sim = 0;
-	init_dongles(data);
-	data->scheduler = ft_strcpy(argv[8]);
-	if (!data->scheduler)
-	{
-		free(data);
-		return (NULL);
-	}
-	if (pthread_mutex_init(&data->mutex_print, NULL) != 0)
-	{
-		free(data);
-		return (NULL);
-	}
-	if (pthread_mutex_init(&data->mutex_stop, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		free(data);
-		return (NULL);
-	}
-	if (pthread_mutex_init(&data->mutex_start, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		pthread_mutex_destroy(&data->mutex_stop);
-		free(data);
-		return (NULL);
-	}
-	if (pthread_mutex_init(&data->mutex_entry, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		pthread_mutex_destroy(&data->mutex_stop);
-		pthread_mutex_destroy(&data->mutex_start);
-		free(data);
-		return (NULL);
-	}
-	return (data);
+    if (argc != 9)
+        return (1);
+    i = 0;
+    while (i < 8)
+    {
+        if (check_int(argv[i]) < 0)
+            return (1);
+        tmp = atoi(argv[i]);
+        if (tmp < 1 || (i == 1 && tmp < 2))
+            return (1);
+        i++;
+    }
+    if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
+        return (1);
+    return (0);
 }
-

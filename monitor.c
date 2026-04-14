@@ -1,49 +1,23 @@
 #include "codexion.h"
 
-void    *monitoring(void *arg)
+int         get_stop_sim(t_data *data)
 {
-    t_coder  *coders;
-    int     i;
-    int     all_done;
-    int     stop;
+    int result;
 
-    coders = (t_coder *)arg;
-    pthread_mutex_lock(&coders[0].data->mutex_start);
-    while (!coders[0].data->start_sim)
-        pthread_cond_wait(&coders[0].data->cond_start, &coders[0].data->mutex_start);
-    pthread_mutex_unlock(&coders[0].data->mutex_start);
-
-    pthread_mutex_lock(&coders[0].data->mutex_stop);
-    stop = coders[0].data->stop_sim;
-    pthread_mutex_unlock(&coders[0].data->mutex_stop);
-    while (!stop)
-    {
-        i = 0;
-        all_done = 1;
-        while (i < coders[0].data->n_coders)
-        {   
-            pthread_mutex_lock(&coders[i].mutex_compiles_done);
-            if (coders[i].compiles_done < coders[0].data->n_compiles)
-                all_done = 0;
-            pthread_mutex_unlock(&coders[i].mutex_compiles_done);
-            i++;
-        }
-        if (all_done == 1)
-        {
-            pthread_mutex_lock(&coders[0].data->mutex_stop);
-            coders[0].data->stop_sim = 1;
-            pthread_mutex_unlock(&coders[0].data->mutex_stop);
-        }
-        pthread_mutex_lock(&coders[0].data->mutex_stop);
-        stop = coders[0].data->stop_sim;
-        pthread_mutex_unlock(&coders[0].data->mutex_stop);
-    }
-    return (NULL);
+    pthread_mutex_lock(&data->mutex_data);
+    result = data->stop_sim;
+    pthread_mutex_unlock(&data->mutex_data);
+    return (result);
 }
 
-
-int init_monitor(t_coder *coder)
+t_monitor   *init_monitor(t_data *data)
 {
-    pthread_create(&coder[0].data->monitor, NULL, monitoring, coder);
-    return (0);
+    t_monitor *monitor;
+
+    monitor = malloc(sizeof(t_monitor));
+    if (!monitor)
+        return (NULL);
+    monitor->coders = data->coders;
+    monitor->data= data;
+    return (monitor);
 }

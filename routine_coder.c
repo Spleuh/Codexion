@@ -44,8 +44,9 @@ void    unlock_mutex_dongles(t_dongle *first, t_dongle *second)
 void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 {
     int (*f)(int, t_dongle*, t_dongle*);
-    
 
+    if (get_stop_sim(coder->data))
+        return ;
     f = get_scheduler(coder->data->args->schedule);
     pthread_mutex_lock(&coder->data->mutex_env->mutex_schedule);
 
@@ -61,14 +62,15 @@ void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
             pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_env->mutex_schedule);
         }
         pthread_mutex_unlock(&coder->data->mutex_env->mutex_schedule);
-        while(lock_mutex_dongles(first, second))
-            usleep(100);
-        // set_available(first, 0);
-        // set_available(second, 0);
-        first->available = 0;
-        second->available = 0;
-        unlock_mutex_dongles(first, second);
-        break;
+        if (lock_mutex_dongles(first, second) == 0)
+        {
+            // set_available(first, 0);
+            // set_available(second, 0);
+            first->available = 0;
+            second->available = 0;
+            unlock_mutex_dongles(second, first);
+            break;
+        }
     }
     // while (!f(coder->id, first, second))
     //     pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_env->mutex_schedule);
@@ -82,6 +84,8 @@ void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
 
 void    compile(t_coder *coder, t_dongle *first, t_dongle *second)
 {
+    if (get_stop_sim(coder->data))
+        return ;
 
     print_mutex(coder->data, "is compiling", coder->id);
     set_last_compile(coder,get_timestamp() - coder->data->timestamp_start);
@@ -93,14 +97,16 @@ void    compile(t_coder *coder, t_dongle *first, t_dongle *second)
 
 void    debug(t_coder *coder)
 {
-
+    if (get_stop_sim(coder->data))
+        return ;
     print_mutex(coder->data, "is debugging", coder->id);
     usleep(coder->data->args->t_debug * 1000);
 }
 
 void    refactor(t_coder *coder)
 {
-
+    if (get_stop_sim(coder->data))
+        return ;
     print_mutex(coder->data, "is refactoring", coder->id);
     usleep(coder->data->args->t_refactor * 1000);
 }
@@ -137,7 +143,9 @@ void    *routine_coder(void *arg)
     second = get_dongle(coder, 1);
     pthread_mutex_lock(&coder->data->mutex_env->mutex_state_sim);
     while (!coder->data->start_sim)
-        pthread_cond_wait(&coder->data->cond_start, &coder->data->mutex_env->mutex_state_sim);
+        {
+            pthread_cond_wait(&coder->data->cond_start, &coder->data->mutex_env->mutex_state_sim);
+        }
     pthread_mutex_unlock(&coder->data->mutex_env->mutex_state_sim);
     if (get_cancel_sim(coder->data))
         return (NULL);

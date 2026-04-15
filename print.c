@@ -18,8 +18,14 @@ void    print_mutex(t_data *data, char *str, int id)
 {
     long    timestamp;
 
+
     timestamp = get_timestamp() - data->timestamp_start;
     pthread_mutex_lock(&data->mutex_env->mutex_print);
+    if (get_stop_sim(data))
+    {
+        pthread_mutex_unlock(&data->mutex_env->mutex_print);
+        return ;
+    }
     printf("%ld %d %s\n", timestamp, id, str);
     pthread_mutex_unlock(&data->mutex_env->mutex_print);
 }

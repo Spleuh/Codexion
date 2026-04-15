@@ -62,7 +62,7 @@ void    start_sim(t_data *data)
     pthread_cond_broadcast(&data->cond_start);
 }
 
-void    print_debug(int i)
+void    print_debug(char *i)
 {
-    printf("%d\n", i);
+    printf("%s\n", i);
 }

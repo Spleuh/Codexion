@@ -28,6 +28,7 @@ void    set_stop_sim(t_data *data, int i)
     pthread_mutex_unlock(&data->mutex_env->mutex_state_sim);
 }
 
+
 t_monitor   *init_monitor(t_data *data)
 {
     t_monitor *monitor;

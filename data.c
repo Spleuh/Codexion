@@ -55,8 +55,9 @@ void    free_data(t_data *data)
 {
     destroy_mutex_mutex_env(data->mutex_env);
     destroy_mutex_dongles(data->args->n_coders, data->dongles);
-    free_coders(data->coders, data->args->n_coders);
     destroy_cond_data(data);
+    free_coders(data->coders, data->args->n_coders);
+    free(data->mutex_env);
     free(data->dongles);
     free_args(data->args);
     free(data);

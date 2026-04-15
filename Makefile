@@ -1,6 +1,6 @@
 CFLAGS= gcc -Wall -Wextra -Werror -pthread
 
-DEBUG_FLAGS= -g -fsanitize=thread
+DEBUG_FLAGS= -fsanitize=thread -g
 
 SRC= main.c args.c coder.c data.c dongle.c monitor.c parser.c scheduler.c thread.c utils.c routine_coder.c mutex_env.c print.c routine_monitor.c routine_scheduler.c
 

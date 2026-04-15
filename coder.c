@@ -13,12 +13,16 @@
 #include "codexion.h"
 
 
-void    free_coders(t_coder *coders, int i)
+void    free_coders(t_coder *coders, int n)
 {
-    while (i >= 0)
+    int i;
+
+    i = 0;
+    while (i < n)
     {
-        i--;
+        print_debug("destroy mutex free coders");
         pthread_mutex_destroy(&coders[i].mutex_coder);
+        i++;
     }
     free(coders);
 }
@@ -50,6 +54,16 @@ void    set_last_compile(t_coder *coder, long timestamp)
     pthread_mutex_lock(&coder->mutex_coder);
     coder->last_compile_start = timestamp;
     pthread_mutex_unlock(&coder->mutex_coder);
+}
+
+long    get_last_comp_start(t_coder *coder)
+{
+    int result;
+
+    pthread_mutex_lock(&coder->mutex_coder);
+    result = coder->last_compile_start;
+    pthread_mutex_unlock(&coder->mutex_coder);
+    return (result);
 }
 
 t_coder *init_coders(t_data *data)

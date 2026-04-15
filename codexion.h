@@ -58,9 +58,9 @@ typedef struct	s_scheduler
 
 typedef struct s_mutex_env
 {
-	pthread_mutex_t	mutex_print;
-	pthread_mutex_t	mutex_schedule;
-	pthread_mutex_t	mutex_state_sim;
+	pthread_mutex_t	mutex_print; // print mutex
+	pthread_mutex_t	mutex_schedule; // global mutex
+	pthread_mutex_t	mutex_state_sim; // start stop cancel
 
 }	t_mutex_env;
 
@@ -97,7 +97,7 @@ void    cancel_sim(t_data *data);
 void    start_sim(t_data *data);
 int     get_cancel_sim(t_data *data);
 long    get_timestamp();
-void    print_debug(int i);
+void    print_debug(char *str);
 
 // parser.c
 int parser(int argc, char **argv);
@@ -119,7 +119,7 @@ void    set_stop_sim(t_data *data, int i);
 // dongle.c
 void    destroy_mutex_dongles(int i, t_dongle *dongles);
 t_dongle    *init_dongles(t_args *args);
-void    set_available(t_dongle **dongle, int i);
+void    set_available(t_dongle *dongle, int i);
 int     check_available(int	id_coder, t_dongle *first, t_dongle *second);
 int     check_id_priority(int id_coder, t_dongle *first, t_dongle *second);
 int     init_mutex_dongles(t_dongle *dongles, int n);
@@ -133,6 +133,7 @@ t_coder *init_coders(t_data *data);
 void    set_last_compile(t_coder *coder, long timestamp);
 void    incr_compile_done(t_coder *coder);
 int     get_compile_done(t_coder *coder);
+long	get_last_comp_start(t_coder *coder);
 
 // args.c
 void    free_args(t_args *args);

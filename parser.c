@@ -37,7 +37,7 @@ int parser(int argc, char **argv)
 
     if (argc != 9)
         return (1);
-    i = 0;
+    i = 1;
     while (i < 8)
     {
         if (check_int(argv[i]) < 0)

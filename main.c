@@ -24,9 +24,15 @@ int	main(int argc, char **argv)
 	if (!data)
 		return (1);
 	scheduler = init_scheduler(data);
-	monitor = init_monitor(data);
-	(void)scheduler;
-	(void)monitor;
-	free(data);
+	monitor = init_monitor(data);	
+	create_thread_coders(data->coders);
+	pthread_create(&monitor->thread_monitor, NULL, routine_monitor, monitor);
+	pthread_create(&scheduler->thread_scheduler, NULL, routine_scheduler, scheduler);
+	set_start_sim(data, 1);
+	pthread_cond_broadcast(&data->cond_start);
+	join_thread_coders(data->coders, data->args->n_coders);
+	pthread_join(monitor->thread_monitor, NULL);
+	pthread_join(scheduler->thread_scheduler, NULL);
+	// free_data(data);
 	return (0);
 }

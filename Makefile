@@ -1,7 +1,8 @@
-CFLAGS= gcc -Wall -Wextra -Werror -pthread -g
+CFLAGS= gcc -Wall -Wextra -Werror -pthread
 
+DEBUG_FLAGS= -g -fsanitize=thread
 
-SRC= main.c args.c coder.c data.c dongle.c monitor.c parser.c scheduler.c thread.c utils.c
+SRC= main.c args.c coder.c data.c dongle.c monitor.c parser.c scheduler.c thread.c utils.c routine_coder.c mutex_env.c print.c routine_monitor.c routine_scheduler.c
 
 OBJ= $(SRC:.c=.o)
 
@@ -29,6 +30,9 @@ clean:
 fclean: clean
 	rm -rf $(NAME)
 
+debug: CFLAGS += $(DEBUG_FLAGS)
+
+debug: re
 
 re: fclean all
 

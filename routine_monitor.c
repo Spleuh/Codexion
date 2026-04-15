@@ -28,6 +28,7 @@ void    *routine_monitor(void *arg)
     while (!monitor->data->start_sim)
         pthread_cond_wait(&monitor->data->cond_start, &monitor->data->mutex_env->mutex_state_sim);
     pthread_mutex_unlock(&monitor->data->mutex_env->mutex_state_sim);
+
     if (get_cancel_sim(monitor->data))
         return (NULL);
     while (get_stop_sim(monitor->data) == 0)
@@ -42,9 +43,10 @@ void    *routine_monitor(void *arg)
                 print_stop_burned_out(monitor, monitor->coders[i].id);
             i++;
         }
-        if (all_done == 1)
+        if (all_done == 1 && get_stop_sim(monitor->data) == 0)
         {
             set_stop_sim(monitor->data, 1);
+            pthread_cond_broadcast(&monitor->data->cond_entry);
         }
     }
     return (NULL);

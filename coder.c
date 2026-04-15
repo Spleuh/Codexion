@@ -20,7 +20,6 @@ void    free_coders(t_coder *coders, int n)
     i = 0;
     while (i < n)
     {
-        print_debug("destroy mutex free coders");
         pthread_mutex_destroy(&coders[i].mutex_coder);
         i++;
     }

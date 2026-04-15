@@ -54,7 +54,8 @@ void    set_start_sim(t_data *data, int i)
 void    free_data(t_data *data)
 {
     destroy_mutex_mutex_env(data->mutex_env);
-    destroy_mutex_dongles(data->args->n_coders, data->dongles);
+    // destroy_mutex_dongles(data->args->n_coders, data->dongles);
+    free_dongles(data->args->n_coders, data->dongles);
     destroy_cond_data(data);
     free_coders(data->coders, data->args->n_coders);
     free(data->mutex_env);

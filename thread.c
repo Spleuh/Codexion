@@ -22,6 +22,7 @@ void    join_thread_coders(t_coder *coders, int n)
         pthread_join(coders[i].thread_coder, NULL);
         i++;
     }
+
 }
 
 void    rollback_thread_coders(t_coder *coders, int i)

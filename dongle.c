@@ -12,17 +12,19 @@
 
 #include "codexion.h"
 
-void    set_end_cooldown(t_dongle *dongle, long timestamp)
+void    set_end_cooldown(t_dongle **dongle, long timestamp)
 {
-    pthread_mutex_lock(&dongle->mutex_dongle);
-    dongle->end_cooldown = timestamp;
-    pthread_mutex_unlock(&dongle->mutex_dongle);
+    t_dongle    *test;
+
+    test = (*dongle);
+    pthread_mutex_lock(&test->mutex_dongle);
+    (*dongle)->end_cooldown = timestamp;
+    pthread_mutex_unlock(&test->mutex_dongle);
 }
 
 long    get_end_cooldown(t_dongle *dongle)
 {
     long    result;
-
     pthread_mutex_lock(&dongle->mutex_dongle);
     result = dongle->end_cooldown;
     pthread_mutex_unlock(&dongle->mutex_dongle);
@@ -42,14 +44,10 @@ int     get_available(t_dongle *dongle)
 int     check_available(int id_coder, t_dongle *first, t_dongle *second)
 {
     (void)id_coder;
-    int result;
     
-    result = 1;
-    if (get_available(first) == 0)
-        result = 0;
-    else if (get_available(second) == 0)
-        result = 0;
-    return (result);
+    if (!get_available(first) || !get_available(second))
+        return (0);
+    return (1);
 }
 
 int     get_id_priority(t_dongle *dongle)
@@ -88,8 +86,7 @@ void    destroy_mutex_dongles(int i, t_dongle *dongles)
     i--;
     while (i >= 0)
     {
-        
-        pthread_mutex_destroy(&dongles->mutex_dongle);
+        pthread_mutex_destroy(&dongles[i].mutex_dongle);
         i--;
     }
 }

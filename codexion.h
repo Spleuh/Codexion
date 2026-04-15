@@ -97,7 +97,7 @@ void    cancel_sim(t_data *data);
 void    start_sim(t_data *data);
 int     get_cancel_sim(t_data *data);
 long    get_timestamp();
-void    print_debug(char *str);
+void    print_debug(int i);
 
 // parser.c
 int parser(int argc, char **argv);
@@ -123,9 +123,10 @@ void    set_available(t_dongle *dongle, int i);
 int     check_available(int	id_coder, t_dongle *first, t_dongle *second);
 int     check_id_priority(int id_coder, t_dongle *first, t_dongle *second);
 int     init_mutex_dongles(t_dongle *dongles, int n);
-void    set_end_cooldown(t_dongle *dongle, long timestamp);
+void    set_end_cooldown(t_dongle **dongle, long timestamp);
 long    get_end_cooldown(t_dongle *dongle);
 int     get_available(t_dongle *dongle);
+void    free_dongles(int i, t_dongle *dongles);
 
 // coder.c
 void    free_coders(t_coder *coders, int i);
@@ -145,6 +146,7 @@ void    join_thread_coders(t_coder *coders, int n);
 
 // routine_coder.c
 void    *routine_coder(void *arg);
+int     secure_lock_test(t_dongle *first, t_dongle *second, t_coder *coder);
 
 // routine_monitor.c
 void    *routine_monitor(void *arg);

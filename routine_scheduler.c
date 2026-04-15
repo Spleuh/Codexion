@@ -42,6 +42,8 @@ void    *routine_scheduler(void *arg)
         i = 0;
         while (i < scheduler->data->args->n_coders)
         {
+            // print_debug(get_end_cooldown(&scheduler->dongles[i]));
+            // print_debug(get_timestamp() - scheduler->data->timestamp_start);
             if (get_end_cooldown(&scheduler->dongles[i]) < get_timestamp() - scheduler->data->timestamp_start)
             {
                 // test = &scheduler->dongles[i];

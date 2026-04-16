@@ -78,7 +78,7 @@ void    set_available(t_dongle *dongle, int i)
 void    free_dongles(int i, t_dongle *dongles)
 {
     destroy_mutex_dongles(i, dongles);
-    free(dongles);
+    // free(dongles);
 }
 
 void    destroy_mutex_dongles(int i, t_dongle *dongles)

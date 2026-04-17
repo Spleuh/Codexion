@@ -12,20 +12,6 @@
 
 #include "codexion.h"
 
-
-void    free_coders(t_coder *coders, int n)
-{
-    int i;
-
-    i = 0;
-    while (i < n)
-    {
-        pthread_mutex_destroy(&coders[i].mutex_coder);
-        i++;
-    }
-    free(coders);
-}
-
 void    incr_compile_done(t_coder *coder)
 {
     if (get_stop_sim(coder->data))
@@ -34,6 +20,7 @@ void    incr_compile_done(t_coder *coder)
     coder->compiles_done += 1;
     pthread_mutex_unlock(&coder->mutex_coder);
 }
+
 int     get_compile_done(t_coder *coder)
 {
     int result;
@@ -65,29 +52,3 @@ long    get_last_comp_start(t_coder *coder)
     return (result);
 }
 
-t_coder *init_coders(t_data *data)
-{
-    int i;
-    t_coder *coders;
-
-    coders = malloc(sizeof(t_coder) * (data->args->n_coders));
-    if (!coders)
-        return (NULL);
-    i = 0;
-    while (i < data->args->n_coders)
-    {
-        coders[i].id = i;
-        coders[i].data = data;
-        coders[i].last_compile_start = 0;
-        coders[i].compiles_done = 0;
-        if (pthread_mutex_init(&coders[i].mutex_coder, NULL) != 0)
-            break;
-        i++;
-    }
-    if (i < data->args->n_coders)
-    {
-        free_coders(coders, i);
-        return (NULL);
-    }
-    return (coders);
-}

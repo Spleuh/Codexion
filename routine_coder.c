@@ -26,22 +26,13 @@ int     lock_mutex_dongles(t_dongle *first, t_dongle *second)
 {
     if (pthread_mutex_lock(&first->mutex_dongle) != 0)
         return (1);
-    else if (pthread_mutex_lock(&second->mutex_dongle) != 0)
+    if (pthread_mutex_lock(&second->mutex_dongle) != 0)
     {
         pthread_mutex_unlock(&first->mutex_dongle);
         return (1);
     }
     return (0);
 }
-
-int     secure_lock_test(t_dongle *first, t_dongle *second, t_coder *coder)
-{
-    if (get_stop_sim(coder->data))
-        return (1);
-    else
-        return (lock_mutex_dongles(first, second));
-}
-
 
 void    unlock_mutex_dongles(t_dongle *first, t_dongle *second)
 {
@@ -62,41 +53,46 @@ void    take_dongles(t_coder *coder, t_dongle *first, t_dongle *second)
     while(1)
     {
         if (get_stop_sim(coder->data))
-            break ;
+        {
+            pthread_mutex_unlock(&coder->data->mutex_env->mutex_schedule);
+            return ;
+        }
         while (!f(coder->id, first, second))
         {
-            if (get_stop_sim(coder->data))
-                break ;
             pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_env->mutex_schedule);
         }
-        if (get_stop_sim(coder->data))
-            break ;
-        if(secure_lock_test(first, second, coder) == 0)
+        pthread_mutex_unlock(&coder->data->mutex_env->mutex_schedule);
+        if (lock_mutex_dongles(first, second) == 0)
         {
+            // set_available(first, 0);
+            // set_available(second, 0);
             first->available = 0;
             second->available = 0;
             unlock_mutex_dongles(second, first);
             break;
         }
     }
-    pthread_mutex_unlock(&coder->data->mutex_env->mutex_schedule);
+    // while (!f(coder->id, first, second))
+    //     pthread_cond_wait(&coder->data->cond_entry, &coder->data->mutex_env->mutex_schedule);
+    // pthread_mutex_unlock(&coder->data->mutex_env->mutex_schedule);
+    // set_available(&first, 0);
+    // set_available(&second, 0);
+    // lock_mutex_dongles(first, second);
     print_mutex(coder->data, "has taken dongle", coder->id);
     print_mutex(coder->data, "has taken dongle", coder->id);
 }
 
 void    compile(t_coder *coder, t_dongle *first, t_dongle *second)
 {
-    long    timestamp;
     if (get_stop_sim(coder->data))
         return ;
 
-    incr_compile_done(coder);
     print_mutex(coder->data, "is compiling", coder->id);
     set_last_compile(coder,get_timestamp() - coder->data->timestamp_start);
     usleep(coder->data->args->t_compile * 1000);
-    timestamp = get_timestamp() - coder->data->timestamp_start + coder->data->args->t_cooldown;
-    set_end_cooldown(&first, timestamp);
-    set_end_cooldown(&second, timestamp);
+    set_end_cooldown(first,get_timestamp() - coder->data->timestamp_start + coder->data->args->t_cooldown);
+    set_end_cooldown(second,get_timestamp() - coder->data->timestamp_start + coder->data->args->t_cooldown);
+    incr_compile_done(coder);
 }
 
 void    debug(t_coder *coder)
@@ -147,21 +143,17 @@ void    *routine_coder(void *arg)
     second = get_dongle(coder, 1);
     pthread_mutex_lock(&coder->data->mutex_env->mutex_state_sim);
     while (!coder->data->start_sim)
+        {
             pthread_cond_wait(&coder->data->cond_start, &coder->data->mutex_env->mutex_state_sim);
+        }
     pthread_mutex_unlock(&coder->data->mutex_env->mutex_state_sim);
     if (get_cancel_sim(coder->data))
         return (NULL);
     while (!get_stop_sim(coder->data))
     {
         take_dongles(coder, first, second);
-        if (get_stop_sim(coder->data))
-            break;
         compile(coder, first, second);
-        if (get_stop_sim(coder->data))
-            break;
         debug(coder);
-        if (get_stop_sim(coder->data))
-            break;
         refactor(coder);
     }
     return (NULL);

@@ -37,7 +37,7 @@ t_monitor   *init_monitor(t_data *data)
     if (!monitor)
         return (NULL);
     monitor->coders = data->coders;
-    monitor->data = data;
+    monitor->data= data;
     return (monitor);
 }
 

@@ -7,15 +7,7 @@ void    destroy_cond_data(t_data *data)
     return ;
 }
 
-void    destroy_mutex_dongles(int i, t_dongle *dongles)
-{
-    i--;
-    while (i >= 0)
-    {
-        pthread_mutex_destroy(&dongles[i].mutex_dongle);
-        i--;
-    }
-}
+
 
 void    free_dongles(int i, t_dongle *dongles)
 {

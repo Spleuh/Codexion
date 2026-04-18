@@ -28,8 +28,8 @@ long    get_timestamp(t_data *data)
     struct  timeval time;
     gettimeofday(&time, NULL);
     
-    result = time.tv_sec * 1000L + time.tv_usec / 1000L
-    result -= data->ts_start;
+    result = time.tv_sec * 1000L + time.tv_usec / 1000L;
+    result = result - data->ts_start;
     return (result);
 }
 

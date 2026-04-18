@@ -14,11 +14,11 @@
 # define CODEXION_H
 
 # include <pthread.h>
-# include <stdlib.h>
-# include <string.h>
-# include <stdio.h>
-# include <unistd.h>
-# include <sys/time.h>
+# include <stdlib.h> //atoi
+# include <string.h> // strcmp
+# include <stdio.h> // printf
+// # include <unistd.h>
+// # include <sys/time.h>
 
 typedef struct s_data t_data;
 
@@ -38,11 +38,13 @@ typedef	struct s_heap
 typedef	struct	s_dongle
 {
 	int				id; // dongle's id
-	int				available;
 
 	t_heap			*queue; // priority queue
 
 	pthread_mutex_t	mutex_dongle; //mutex dongle
+	pthread_mutex_t	*mutex_state_dongles;
+
+	pthread_cond_t	*cond_state_dongles;
 
 	long			end_cooldown;
 }	t_dongle;
@@ -77,8 +79,11 @@ typedef struct s_data
 
 	pthread_mutex_t	mutex_print; // print mutex
 	pthread_mutex_t	mutex_state_sim; // start stop cancel count_ready
+	pthread_mutex_t	mutex_state_dongles;
+	  
 
 	pthread_cond_t	cond_start;
+	pthread_cond_t	cond_state_dongles;
 
 	long			ts_start; // timestamp start si when cond start ok
 	
@@ -99,22 +104,8 @@ typedef struct s_data
 // parser.c
 int parser(int argc, char **argv);
 
-// init_clean_data.c
+// data_init.c
 t_data  *init_data(char **argv);
+
+// data_cleanup.c
 void    cleanup_data(t_data *data);
-
-// init_dongles.c
-int     init_dongles(t_data *data);
-
-// init_coders.c
-int     init_coders(t_data *data);
-
-// cleanup_coders.c
-void    cleanup_coders(t_data *data);
-void    destroy_mutex_coders(t_coder *coders, int n);
-
-// cleanup_dongles.c
-void    cleanup_dongles(t_data *data);
-void    free_queue_dongles(int  n, t_dongle *dongles);
-void    destroy_mutex_dongles(int i, t_dongle *dongles);
-

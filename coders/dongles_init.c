@@ -1,6 +1,6 @@
 #include "codexion.h"
 
-void    init_args_dongles(t_dongle *dongles, int n)
+void    init_args_dongles(t_dongle *dongles, int n, t_data *data)
 {
     int i;
 
@@ -10,6 +10,8 @@ void    init_args_dongles(t_dongle *dongles, int n)
         dongles[i].id = i;
         dongles[i].available = 1;
         dongles[i].end_cooldown = -1;
+        dongles[i].mutex_state_dongles = data->mutex_state_dongles;
+        dongles[i].cond_state_dongles = data->cond_state_dongles;
         i++;
     }
 }
@@ -70,7 +72,7 @@ int     init_dongles(t_data *data)
     data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
     if (!data->dongles)
         return (1);
-    init_args_dongles(data->dongles, data->n_coders);
+    init_args_dongles(data->dongles, data->n_coders, data);
     if (init_queue_dongles(data->dongles, data->n_coders) != 0)
     {
         free(data->dongles);

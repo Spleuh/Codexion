@@ -12,12 +12,12 @@
 
 #include "codexion.h"
 
-void    set_end_cooldown(t_dongle *dongle, long timestamp)
-{
-    pthread_mutex_lock(&dongle->mutex_dongle);
-    dongle->end_cooldown = timestamp;
-    pthread_mutex_unlock(&dongle->mutex_dongle);
-}
+// void    set_end_cooldown(t_dongle *dongle, long timestamp)
+// {
+//     pthread_mutex_lock(&dongle->mutex_dongle);
+//     dongle->end_cooldown = timestamp;
+//     pthread_mutex_unlock(&dongle->mutex_dongle);
+// }
 
 long    get_end_cooldown(t_dongle *dongle)
 {

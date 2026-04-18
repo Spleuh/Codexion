@@ -1,64 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsam <jsam@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/14 05:48:16 by jsam              #+#    #+#             */
-/*   Updated: 2026/04/14 05:48:17 by jsam             ###   ########lyon.fr   */
+/*   Created: 2026/04/14 05:47:40 by jsam              #+#    #+#             */
+/*   Updated: 2026/04/14 05:47:43 by jsam             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdarg.h>
 
-int     get_count_ready(t_data *data)
+
+void    print_mutex(t_data *data, char *str, int id)
 {
-    int result;
+    pthread_mutex_lock(&data->mutex_print);
+    if (get_stop_sim(data))
+    {
+        pthread_mutex_unlock(&data->mutex_env->mutex_print);
+        return ;
+    }
+    printf("%ld %d %s\n", get_timestamp(), id, str);
+    pthread_mutex_unlock(&data->mutex_env->mutex_print);
+}
 
+void    print_stop_burned_out(t_data *data, int id)
+{
+    pthread_mutex_lock(&data->mutex_print);
     pthread_mutex_lock(&data->mutex_state_sim);
-    result = data->count_ready;
+    data->stop_sim = 1;
+    printf("%ld %d burned out\n", get_timestamp(), id);
     pthread_mutex_unlock(&data->mutex_state_sim);
-    return (result);
-}
-
-long    get_timestamp(t_data *data)
-{
-    long    result;
-    struct  timeval time;
-    gettimeofday(&time, NULL);
-    
-    result = time.tv_sec * 1000L + time.tv_usec / 1000L;
-    result = result - data->ts_start;
-    return (result);
-}
-
-int     get_cancel_sim(t_data *data)
-{
-    int result;
-
-    pthread_mutex_lock(&data->mutex_state_sim);
-    result = data->cancel_sim;
-    pthread_mutex_unlock(&data->mutex_state_sim);
-    return (result);
-}
-
-void    cancel_sim(t_data *data)
-{
-    pthread_mutex_lock(&data->mutex_state_sim);
-    data->cancel_sim = 1;
-    pthread_mutex_unlock(&data->mutex_state_sim);
-}
-
-void    start_sim(t_data *data)
-{
-    pthread_mutex_lock(&data->mutex_state_sim);
-    data->start_sim = 1;
-    pthread_cond_broadcast(&data->cond_start);
-    pthread_mutex_unlock(&data->mutex_state_sim);
-}
-
-void    print_debug(char *i)
-{
-    printf("%s\n", i);
+    pthread_mutex_unlock(&data->mutex_print);
 }

@@ -1,11 +1,6 @@
 #include "codexion.h"
 
-void    destroy_cond_data(t_data *data)
-{
-    pthread_cond_destroy(&data->cond_entry);
-    pthread_cond_destroy(&data->cond_start);
-    return ;
-}
+
 
 
 

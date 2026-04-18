@@ -72,6 +72,5 @@ int     init_coders(t_data *data)
         free(data->coders);
         return (1);
     }
-	printf("coders ptr at init = %p\n", data->coders);
     return (0);
 }

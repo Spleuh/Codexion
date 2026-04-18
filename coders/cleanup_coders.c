@@ -14,7 +14,6 @@ void    destroy_mutex_coders(t_coder *coders, int n)
 
 void    cleanup_coders(t_data *data)
 {
-    printf("free coders = %p\n", data->coders);
     destroy_mutex_coders(data->coders, data->n_coders);
     free(data->coders);
 }

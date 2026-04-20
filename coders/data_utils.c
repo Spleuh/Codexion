@@ -22,14 +22,23 @@ int     get_count_ready(t_data *data)
     return (result);
 }
 
+long    get_ts_start(t_data *data)
+{
+    long    ts_start;
+    
+    pthread_mutex_lock(&data->mutex_ts_start);
+    ts_start = data->ts_start;
+    pthread_mutex_unlock(&data->mutex_ts_start);
+    return (ts_start);
+}
+
 long    get_timestamp(t_data *data)
 {
     long    result;
     struct  timeval time;
     gettimeofday(&time, NULL);
-    
     result = time.tv_sec * 1000L + time.tv_usec / 1000L;
-    result = result - data->ts_start;
+    result = result - get_ts_start(data);
     return (result);
 }
 

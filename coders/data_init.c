@@ -45,6 +45,14 @@ int     init_mutex_data(t_data *data)
         pthread_mutex_destroy(&data->mutex_state_sim);
         return (1);
     }
+    if (pthread_mutex_init(&data->mutex_ts_start, NULL) != 0)
+    {
+        pthread_mutex_destroy(&data->mutex_print);
+        pthread_mutex_destroy(&data->mutex_state_sim);
+        pthread_mutex_destroy(&data->mutex_state_dongles);
+        return (1);
+
+    }
     return (0);
 }
 

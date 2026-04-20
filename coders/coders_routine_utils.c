@@ -1,25 +1,48 @@
 #include "codexion.h"
 
-int     check_priority(t_coder *coder)
+void    unlock_dongles(t_coder *coder)
 {
-    if (get_id_priority(coder->first->heap) != coder->id)
+    pthread_mutex_unlock(&coder->second->mutex_dongle);
+    pthread_mutex_unlock(&coder->first->mutex_dongle);
+}
+
+int     try_lock_dongles(t_coder *coder)
+{
+    if (pthread_mutex_lock(&coder->first->mutex_dongle) != 0)
         return (1);
-    if (get_id_priority(coder->second->heap) != coder->id)
+    else if(pthread_mutex_lock(&coder->second->mutex_dongle) != 0)
+    {
+        pthread_mutex_unlock(&coder->first->mutex_dongle);
         return (1);
-    if (get_end_cooldown(coder->first) > get_timestamp(coder->data))
-        return (1);
-    if (get_end_cooldown(coder->second) > get_timestamp(coder->data))
-        return (1);
+    }
     return (0);
 }
 
-int     check_dongles(t_coder *coder)
+int     check_priority(t_coder *coder)
 {
-    if (check_id_priority(coder) != 0)
-    {
-    }
-    heap_pop(first->heap);
-    heap_pop(second->heap);
-    pthread_mutex_unlock(&coder->second);
-    pthread_mutex_unlock(&coder->first);
+    if (coder->first->available == 0)
+        return (1);
+    else if (coder->first->available == 0)
+        return (1);
+    else if (get_id_priority(coder->first->queue) != coder->id)
+        return (1);
+    else if (get_id_priority(coder->second->queue) != coder->id)
+        return (1);
+    else if (coder->first->end_cooldown > get_timestamp(coder->data))
+        return (1);
+    else if (coder->second->end_cooldown > get_timestamp(coder->data))
+        return (1);
+    // else if (try_lock_dongles(coder))
+    //     return (1);
+    return (0);
+}
+
+int     update_cd_dongles(t_coder *coder)
+{
+    long    new_cd;
+
+    new_cd = get_timestamp(coder->data) + coder->data->t_cooldown;
+    coder->first->end_cooldown = new_cd;
+    coder->second->end_cooldown = new_cd;
+    return (0);
 }

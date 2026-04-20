@@ -2,7 +2,10 @@ CFLAGS= gcc -Wall -Wextra -Werror -pthread
 
 DEBUG_FLAGS= -fsanitize=thread -g
 
-SRC= main.c parser.c data_init.c
+SRC= main.c parser.c data_init.c data_cleanup.c dongles_init.c dongles_cleanup.c \
+coders_init.c coders_cleanup.c thread_create.c thread_join.c utils.c data_utils.c \
+data_utils_2.c coders_routine.c coders_routine_utils.c monitor_routine.c heap_utils.c\
+coders_utils.c dongles_utils.c heap.c 
 
 OBJ= $(SRC:.c=.o)
 

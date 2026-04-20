@@ -1,0 +1,35 @@
+
+Thread 3 (Thread 0x7ffff38fe6c0 (LWP 91206) "codexion"):
+#0  0x00007ffff6a98d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x72480000011c) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x72480000011c) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x72480000011c, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007ffff6a9b7ed in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x724800000070, cond=0x7248000000f0) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7248000000f0, mutex=0x724800000070) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007ffff6ea7df3 in __tsan::call_pthread_cancel_with_cleanup (fn=fn@entry=0x7ffff6e4f490 <_FUN(void*)>, cleanup=cleanup@entry=0x7ffff6e56030 <_FUN(void*)>, arg=arg@entry=0x7ffff38fd5d0) at ../../../../src/libsanitizer/tsan/tsan_platform_linux.cpp:507
+#6  0x00007ffff6e5b147 in cond_wait<___interceptor_pthread_cond_wait(void*, void*)::<lambda()> > (thr=<optimized out>, pc=140737335635886, si=0x7ffff38fd5b0, fn=..., c=0x7248000000f0, m=0x724800000070) at ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:1230
+#7  ___interceptor_pthread_cond_wait (c=<optimized out>, m=0x724800000070) at ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:1244
+#8  0x0000555555557846 in take_dongles (coder=0x722c00000000) at coders_routine.c:38
+#9  0x0000555555557d2e in routine_coder (arg=0x722c00000000) at coders_routine.c:98
+#10 0x00007ffff6e4edef in __tsan_thread_start_func (arg=0x7fffffffd750) at ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:1012
+#11 0x00007ffff6a9caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#12 0x00007ffff6b29c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x7ffff40ff6c0 (LWP 91205) "codexion"):
+#0  0x00007ffff6ecff77 in __sanitizer::internal_usleep (useconds=useconds@entry=100000) at ../../../../src/libsanitizer/sanitizer_common/sanitizer_linux.cpp:519
+#1  0x00007ffff6ec7bc2 in __sanitizer::SleepForMillis (millis=millis@entry=100) at ../../../../src/libsanitizer/sanitizer_common/sanitizer_common.cpp:379
+#2  0x00007ffff6eaed9a in __tsan::BackgroundThread (arg=<optimized out>) at ../../../../src/libsanitizer/tsan/tsan_rtl.cpp:473
+#3  0x00007ffff6a9caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#4  0x00007ffff6b29c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7ffff7e9bf00 (LWP 91185) "codexion"):
+#0  0x00007ffff6a98d71 in __futex_abstimed_wait_common64 (private=128, cancel=true, abstime=0x0, op=265, expected=91206, futex_word=0x7ffff38fe990) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=128, abstime=0x0, clockid=0, expected=91206, futex_word=0x7ffff38fe990) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7ffff38fe990, expected=91206, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=128) at ./nptl/futex-internal.c:139
+#3  0x00007ffff6a9e7a3 in __pthread_clockjoin_ex (threadid=140737279682240, thread_return=0x0, clockid=0, abstime=0x0, block=<optimized out>) at ./nptl/pthread_join_common.c:102
+#4  0x00007ffff6e58ac1 in ___interceptor_pthread_join (th=0x7ffff38fe6c0, ret=0x0) at ../../../../src/libsanitizer/tsan/tsan_interceptors_posix.cpp:1082
+#5  0x0000555555556ffb in join_thread_coders (data=0x724800000000, n=2) at thread_join.c:10
+#6  0x000055555555704f in join_thread_all (data=0x724800000000) at thread_join.c:17
+#7  0x0000555555555592 in main (argc=9, argv=0x7fffffffda08) at main.c:33
+Warning: 'set logging off', an alias for the command 'set logging enabled', is deprecated.
+Use 'set logging enabled off'.
+

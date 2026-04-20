@@ -19,19 +19,42 @@ void    print_mutex(t_data *data, char *str, int id)
     pthread_mutex_lock(&data->mutex_print);
     if (get_stop_sim(data))
     {
-        pthread_mutex_unlock(&data->mutex_env->mutex_print);
+        pthread_mutex_unlock(&data->mutex_print);
         return ;
     }
-    printf("%ld %d %s\n", get_timestamp(), id, str);
-    pthread_mutex_unlock(&data->mutex_env->mutex_print);
+    printf("%ld %d %s\n", get_timestamp(data), id, str);
+    pthread_mutex_unlock(&data->mutex_print);
 }
 
 void    print_stop_burned_out(t_data *data, int id)
 {
+    long    ts_burned_out = get_timestamp(data);
     pthread_mutex_lock(&data->mutex_print);
     pthread_mutex_lock(&data->mutex_state_sim);
     data->stop_sim = 1;
-    printf("%ld %d burned out\n", get_timestamp(), id);
+    printf("%ld %d burned out\n", ts_burned_out, id);
     pthread_mutex_unlock(&data->mutex_state_sim);
     pthread_mutex_unlock(&data->mutex_print);
+}
+
+void	wait_ready_start(t_data *data)
+{
+    while (get_count_ready(data) < data->n_coders + 1)
+    {
+        usleep(100);
+    }
+    pthread_mutex_lock(&data->mutex_state_sim);
+	data->start_sim = 1;
+    data->ts_start = get_timestamp(data);
+	pthread_cond_broadcast(&data->cond_start);
+	pthread_mutex_unlock(&data->mutex_state_sim);
+}
+
+void    wait_ready_end(t_data *data)
+{
+    while (get_count_ready(data) > 0)
+    {
+        send_broadcast_state_dongle(data);
+        usleep(1000);
+    }
 }

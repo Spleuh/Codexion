@@ -35,8 +35,6 @@ int     get_compile_done(t_coder *coder)
 
 void    set_last_compile(t_coder *coder, long timestamp)
 {
-    if (get_stop_sim(coder->data))
-        return ;
     pthread_mutex_lock(&coder->mutex_coder);
     coder->last_compile_start = timestamp;
     pthread_mutex_unlock(&coder->mutex_coder);

@@ -93,7 +93,6 @@ void    *routine_coder(void *arg)
         debug(coder);
         refactor(coder);
     }
-    // print_debug("debug");
     decr_count_ready(coder->data);
     return (NULL);
 }

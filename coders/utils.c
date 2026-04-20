@@ -22,7 +22,7 @@ void    print_mutex(t_data *data, char *str, int id)
         pthread_mutex_unlock(&data->mutex_print);
         return ;
     }
-    printf("%ld %d %s\n", get_timestamp(data), id, str);
+    printf("%ld %d %s\n", get_timestamp(data), id + 1, str);
     pthread_mutex_unlock(&data->mutex_print);
 }
 

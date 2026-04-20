@@ -41,8 +41,10 @@ int     update_cd_dongles(t_coder *coder)
 {
     long    new_cd;
 
+    pthread_mutex_lock(&coder->data->mutex_state_dongles);
     new_cd = get_timestamp(coder->data) + coder->data->t_cooldown;
     coder->first->end_cooldown = new_cd;
     coder->second->end_cooldown = new_cd;
+    pthread_mutex_unlock(&coder->data->mutex_state_dongles);
     return (0);
 }

@@ -108,7 +108,7 @@ int parser(int argc, char **argv);
 void	wait_ready_start(t_data *data);
 void    print_mutex(t_data *data, char *str, int id);
 void    print_stop_burned_out(t_data *data, int id);
-void    print_debug(char *i);
+void    print_debug(int l);
 
 // heap.c
 void    heap_pop(t_heap *heap);
@@ -138,7 +138,6 @@ int     get_count_ready(t_data *data);
 int     get_stop_sim(t_data *data);
 void    set_stop_sim(t_data *data, int i);
 void    incr_count_ready(t_data *data);
-void    decr_count_ready(t_data *data);
 
 // dongles_init.c
 int     init_dongles(t_data *data);
@@ -149,7 +148,6 @@ void    free_queue_dongles(int  n, t_dongle *dongles);
 void    destroy_mutex_dongles(int i, t_dongle *dongles);
 
 // dongles_utils.c
-// long    get_end_cooldown(t_dongle *dongle);
 void    set_available(t_data *data, t_dongle *dongle, int i);
 
 // coders_init.c

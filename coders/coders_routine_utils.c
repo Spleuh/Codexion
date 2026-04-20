@@ -33,8 +33,6 @@ int     check_priority(t_coder *coder)
         return (1);
     else if (coder->second->end_cooldown > get_timestamp(coder->data))
         return (1);
-    // else if (try_lock_dongles(coder))
-    //     return (1);
     return (0);
 }
 

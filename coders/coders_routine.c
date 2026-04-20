@@ -33,8 +33,8 @@ void    take_dongles(t_coder *coder)
     pthread_cond_broadcast(&coder->data->cond_state_dongles);
     pthread_mutex_unlock(&coder->data->mutex_state_dongles);
     try_lock_dongles(coder);
-    print_mutex(coder->data, "has taken dongle", coder->id);
-    print_mutex(coder->data, "has taken dongle", coder->id);
+    print_mutex(coder->data, "has taken a dongle", coder->id);
+    print_mutex(coder->data, "has taken a dongle", coder->id);
 }
 
 void    compile(t_coder *coder)
@@ -93,6 +93,5 @@ void    *routine_coder(void *arg)
         debug(coder);
         refactor(coder);
     }
-    // decr_count_ready(coder->data);
     return (NULL);
 }

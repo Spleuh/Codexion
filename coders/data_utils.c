@@ -67,7 +67,7 @@ void    set_start_sim(t_data *data, int i)
     pthread_mutex_unlock(&data->mutex_state_sim);
 }
 
-void    print_debug(char *i)
+void    print_debug(int l)
 {
-    printf("%s\n", i);
+    printf("compile done : %d\n", l);
 }

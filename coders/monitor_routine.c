@@ -63,6 +63,5 @@ void    *routine_monitor(void *arg)
         return (NULL);
     while (get_stop_sim(data) == 0)
         check_all(data);
-    // decr_count_ready(data);
     return (NULL);
 }

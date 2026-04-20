@@ -26,9 +26,7 @@ int	main(int argc, char **argv)
 		return (1);
 	if (create_thread_all(data) != 0)
 		return (1);
-	// create_thread_all(data);
 	wait_ready_start(data);
-	// usleep(1000);
 	join_thread_all(data);
 	cleanup_data(data);
 	return (0);

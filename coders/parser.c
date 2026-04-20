@@ -43,7 +43,7 @@ int parser(int argc, char **argv)
         if (check_int(argv[i]) < 0)
             return (1);
         tmp = atoi(argv[i]);
-        if (tmp < 1)//|| (i == 1 && tmp < 2))
+        if (tmp < 1)
             return (1);
         i++;
     }

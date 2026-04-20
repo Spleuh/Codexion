@@ -24,9 +24,3 @@ void    incr_count_ready(t_data *data)
     pthread_mutex_unlock(&data->mutex_state_sim);
 }
 
-void    decr_count_ready(t_data *data)
-{
-    pthread_mutex_lock(&data->mutex_state_sim);
-    data->count_ready--;
-    pthread_mutex_unlock(&data->mutex_state_sim);
-}

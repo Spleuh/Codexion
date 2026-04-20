@@ -12,46 +12,6 @@
 
 #include "codexion.h"
 
-// void    set_end_cooldown(t_dongle *dongle, long timestamp)
-// {
-//     pthread_mutex_lock(&dongle->mutex_dongle);
-//     dongle->end_cooldown = timestamp;
-//     pthread_mutex_unlock(&dongle->mutex_dongle);
-// }
-
-// long    get_end_cooldown(t_data *data, t_dongle *dongle)
-// {
-//     long    result;
-
-//     pthread_mutex_lock(&data->mutex_state_dongles);
-//     result = dongle->end_cooldown;
-//     pthread_mutex_unlock(&data->mutex_state_dongles);
-//     return (result);
-
-// }
-
-// int     get_available(t_dongle *dongle)
-// {
-//     int result;
-//     pthread_mutex_lock(&dongle->mutex_dongle);
-//     result = dongle->available;
-//     pthread_mutex_unlock(&dongle->mutex_dongle);
-//     return (result);
-// }
-
-// int     check_available(int id_coder, t_dongle *first, t_dongle *second)
-// {
-//     (void)id_coder;
-//     int result;
-    
-//     result = 1;
-//     if (get_available(first) == 0)
-//         result = 0;
-//     else if (get_available(second) == 0)
-//         result = 0;
-//     return (result);
-// }
-
 void    set_available(t_data *data, t_dongle *dongle, int i)
 {
     pthread_mutex_lock(&data->mutex_state_dongles);

@@ -86,13 +86,13 @@ void    *routine_coder(void *arg)
     pthread_mutex_unlock(&coder->data->mutex_state_sim);
     if (get_cancel_sim(coder->data))
         return (NULL);
-    while (get_stop_sim(coder->data) == 0)
+    while (get_stop_sim(coder->data) == 0 && coder->first != coder->second)
     {
         take_dongles(coder);
         compile(coder);
         debug(coder);
         refactor(coder);
     }
-    decr_count_ready(coder->data);
+    // decr_count_ready(coder->data);
     return (NULL);
 }

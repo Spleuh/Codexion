@@ -6,16 +6,17 @@ void    unlock_dongles(t_coder *coder)
     pthread_mutex_unlock(&coder->first->mutex_dongle);
 }
 
-int     try_lock_dongles(t_coder *coder)
+void    try_lock_dongles(t_coder *coder)
 {
+    if (coder->first == coder->second)
+        return ;
     if (pthread_mutex_lock(&coder->first->mutex_dongle) != 0)
-        return (1);
+        return ;
     else if(pthread_mutex_lock(&coder->second->mutex_dongle) != 0)
     {
         pthread_mutex_unlock(&coder->first->mutex_dongle);
-        return (1);
+        return ;
     }
-    return (0);
 }
 
 int     check_priority(t_coder *coder)

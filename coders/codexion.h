@@ -178,7 +178,7 @@ void    *routine_coder(void *arg);
 // coders_routine_utils.c
 int     check_priority(t_coder *coder);
 int     update_cd_dongles(t_coder *coder);
-int     try_lock_dongles(t_coder *coder);
+void	try_lock_dongles(t_coder *coder);
 void    unlock_dongles(t_coder *coder);
 
 // monitor_routine.c

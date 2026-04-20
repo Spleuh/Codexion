@@ -1,6 +1,6 @@
 CFLAGS= gcc -Wall -Wextra -Werror -pthread
 
-DEBUG_FLAGS= -fsanitize=thread -g -O1 -fno-omit-frame-pointer
+DEBUG_FLAGS= -fsanitize=thread -g
 
 SRC= main.c parser.c data_init.c data_cleanup.c dongles_init.c dongles_cleanup.c \
 coders_init.c coders_cleanup.c thread_create.c thread_join.c utils.c data_utils.c \

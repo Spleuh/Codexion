@@ -30,42 +30,7 @@ void	init_args(t_data *data, char **argv)
 	data->count_ready = 0;
 }
 
-int	init_cond_data(t_data *data)
-{
-	if (pthread_cond_init(&data->cond_start, NULL) != 0)
-		return (1);
-	if (pthread_cond_init(&data->cond_state_dongles, NULL) != 0)
-	{
-		pthread_cond_destroy(&data->cond_start);
-		return (1);
-	}
-	return (0);
-}
 
-int	init_mutex_data(t_data *data)
-{
-	if (pthread_mutex_init(&data->mutex_print, NULL) != 0)
-		return (1);
-	if (pthread_mutex_init(&data->mutex_state_sim, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		return (1);
-	}
-	if (pthread_mutex_init(&data->mutex_state_dongles, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		pthread_mutex_destroy(&data->mutex_state_sim);
-		return (1);
-	}
-	if (pthread_mutex_init(&data->mutex_ts_start, NULL) != 0)
-	{
-		pthread_mutex_destroy(&data->mutex_print);
-		pthread_mutex_destroy(&data->mutex_state_sim);
-		pthread_mutex_destroy(&data->mutex_state_dongles);
-		return (1);
-	}
-	return (0);
-}
 
 int	init_dongles_coders(t_data *data)
 {

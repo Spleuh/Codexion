@@ -6,7 +6,7 @@
 /*   By: jsam <jsam@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 21:43:11 by jsam              #+#    #+#             */
-/*   Updated: 2026/04/13 21:43:14 by jsam             ###   ########lyon.fr   */
+/*   Updated: 2026/04/21 21:39:12 by jsam             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	parser(int argc, char **argv)
 		if (check_int(argv[i]) < 0)
 			return (1);
 		tmp = atoi(argv[i]);
-		if (tmp < 1 && i == 1)
+		if (tmp < 1 && (i == 1 || i == 6))
 			return (1);
 		else if (tmp < 0)
 			return (1);

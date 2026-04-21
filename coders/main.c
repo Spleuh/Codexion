@@ -6,7 +6,7 @@
 /*   By: jsam <jsam@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 21:39:34 by jsam              #+#    #+#             */
-/*   Updated: 2026/04/13 21:39:37 by jsam             ###   ########lyon.fr   */
+/*   Updated: 2026/04/21 21:43:17 by jsam             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ int	main(int argc, char **argv)
 
 	if (parser(argc, argv))
 	{
-		printf("Error: n_coder > 1, scheduler 'fifo' or 'edf' and other > 0\n");
+		printf("Error: n_coder and n_compile > 1, ");
+		printf("scheduler 'fifo' or 'edf' and other > 0\n");
 		return (1);
 	}
 	data = init_data(argv);

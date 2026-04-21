@@ -10,17 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "codexion.h"
-
-
 
 int	main(int argc, char **argv)
 {
 	t_data	*data;
 
 	if (parser(argc, argv))
+	{
+		printf("Error: n_coder > 1, scheduler 'fifo' or 'edf' and other > 0\n");
 		return (1);
+	}
 	data = init_data(argv);
 	if (!data)
 		return (1);
@@ -30,5 +30,4 @@ int	main(int argc, char **argv)
 	join_thread_all(data);
 	cleanup_data(data);
 	return (0);
-
 }

@@ -12,10 +12,9 @@
 
 #include "codexion.h"
 
-void    set_available(t_data *data, t_dongle *dongle, int i)
+void	set_available(t_data *data, t_dongle *dongle, int i)
 {
-    pthread_mutex_lock(&data->mutex_state_dongles);
-    dongle->available = i;
-    pthread_mutex_unlock(&data->mutex_state_dongles);
+	pthread_mutex_lock(&data->mutex_state_dongles);
+	dongle->available = i;
+	pthread_mutex_unlock(&data->mutex_state_dongles);
 }
-

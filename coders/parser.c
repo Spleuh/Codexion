@@ -10,44 +10,44 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "codexion.h"
 
-int check_int(char *arg)
+int	check_int(char *arg)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	if (!arg)
-		return -1;	
+		return (-1);
 	while (arg[i])
 	{
 		if (arg[i] < '0' || arg[i] > '9')
-			return -1;
+			return (-1);
 		i++;
 	}
-	return 0;
+	return (0);
 }
 
-
-int parser(int argc, char **argv)
+int	parser(int argc, char **argv)
 {
-    int i;
-    int tmp;
+	int	i;
+	int	tmp;
 
-    if (argc != 9)
-        return (1);
-    i = 1;
-    while (i < 8)
-    {
-        if (check_int(argv[i]) < 0)
-            return (1);
-        tmp = atoi(argv[i]);
-        if (tmp < 1)
-            return (1);
-        i++;
-    }
-    if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
-        return (1);
-    return (0);
+	if (argc != 9)
+		return (1);
+	i = 1;
+	while (i < 8)
+	{
+		if (check_int(argv[i]) < 0)
+			return (1);
+		tmp = atoi(argv[i]);
+		if (tmp < 1 && i == 1)
+			return (1);
+		else if (tmp < 0)
+			return (1);
+		i++;
+	}
+	if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
+		return (1);
+	return (0);
 }

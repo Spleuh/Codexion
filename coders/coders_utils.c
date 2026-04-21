@@ -12,41 +12,40 @@
 
 #include "codexion.h"
 
-void    incr_compile_done(t_coder *coder)
+void	incr_compile_done(t_coder *coder)
 {
-    if (get_stop_sim(coder->data))
-        return ;
-    pthread_mutex_lock(&coder->mutex_coder);
-    coder->compiles_done += 1;
-    pthread_mutex_unlock(&coder->mutex_coder);
+	if (get_stop_sim(coder->data))
+		return ;
+	pthread_mutex_lock(&coder->mutex_coder);
+	coder->compiles_done += 1;
+	pthread_mutex_unlock(&coder->mutex_coder);
 }
 
-int     get_compile_done(t_coder *coder)
+int	get_compile_done(t_coder *coder)
 {
-    int result;
+	int	result;
 
-    if (get_stop_sim(coder->data))
-        return (1);
-    pthread_mutex_lock(&coder->mutex_coder);
-    result = coder->compiles_done;
-    pthread_mutex_unlock(&coder->mutex_coder);
-    return (result);
+	if (get_stop_sim(coder->data))
+		return (1);
+	pthread_mutex_lock(&coder->mutex_coder);
+	result = coder->compiles_done;
+	pthread_mutex_unlock(&coder->mutex_coder);
+	return (result);
 }
 
-void    set_last_compile(t_coder *coder, long timestamp)
+void	set_last_compile(t_coder *coder, long timestamp)
 {
-    pthread_mutex_lock(&coder->mutex_coder);
-    coder->last_compile_start = timestamp;
-    pthread_mutex_unlock(&coder->mutex_coder);
+	pthread_mutex_lock(&coder->mutex_coder);
+	coder->last_compile_start = timestamp;
+	pthread_mutex_unlock(&coder->mutex_coder);
 }
 
-long    get_last_comp_start(t_coder *coder)
+long	get_last_comp_start(t_coder *coder)
 {
-    int result;
+	int	result;
 
-    pthread_mutex_lock(&coder->mutex_coder);
-    result = coder->last_compile_start;
-    pthread_mutex_unlock(&coder->mutex_coder);
-    return (result);
+	pthread_mutex_lock(&coder->mutex_coder);
+	result = coder->last_compile_start;
+	pthread_mutex_unlock(&coder->mutex_coder);
+	return (result);
 }
-

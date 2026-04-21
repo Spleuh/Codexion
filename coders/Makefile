@@ -40,4 +40,4 @@ debug: re
 re: fclean all
 
 
-.PHONY : all clean fclean re bonus cleanbonus fcleanbonus rebonus
+.PHONY : all clean fclean re debug

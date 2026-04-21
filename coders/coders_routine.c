@@ -18,7 +18,7 @@ void	take_dongles(t_coder *coder)
 		return ;
 	add_requests(coder);
 	pthread_mutex_lock(&coder->data->mutex_state_dongles);
-	while (get_stop_sim(coder->data) && check_priority(coder) != 0)
+	while (get_stop_sim(coder->data) == 0 && check_priority(coder) != 0)
 	{
 		pthread_cond_wait(&coder->data->cond_state_dongles,
 			&coder->data->mutex_state_dongles);

@@ -35,7 +35,7 @@ int	check_priority(t_coder *coder)
 {
 	if (coder->first->available == 0)
 		return (1);
-	else if (coder->first->available == 0)
+	else if (coder->second->available == 0)
 		return (1);
 	else if (get_id_priority(coder->first->queue) != coder->id)
 		return (1);

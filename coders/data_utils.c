@@ -36,6 +36,7 @@ long    get_timestamp(t_data *data)
 {
     long    result;
     struct  timeval time;
+
     gettimeofday(&time, NULL);
     result = time.tv_sec * 1000L + time.tv_usec / 1000L;
     result = result - get_ts_start(data);

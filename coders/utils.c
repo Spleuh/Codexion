@@ -16,23 +16,27 @@
 
 void    print_mutex(t_data *data, char *str, int id)
 {
+    long    ts;
     pthread_mutex_lock(&data->mutex_print);
     if (get_stop_sim(data))
     {
         pthread_mutex_unlock(&data->mutex_print);
         return ;
     }
-    printf("%ld %d %s\n", get_timestamp(data), id + 1, str);
+    ts = get_timestamp(data);
+    printf("%ld %d %s\n",ts , id + 1, str);
     pthread_mutex_unlock(&data->mutex_print);
 }
 
 void    print_stop_burned_out(t_data *data, int id)
 {
-    long    ts_burned_out = get_timestamp(data);
+    long    ts;
+
+    ts = get_timestamp(data);
     pthread_mutex_lock(&data->mutex_print);
     pthread_mutex_lock(&data->mutex_state_sim);
     data->stop_sim = 1;
-    printf("%ld %d burned out\n", ts_burned_out, id);
+    printf("%ld %d burned out\n", ts, id);
     pthread_mutex_unlock(&data->mutex_state_sim);
     pthread_mutex_unlock(&data->mutex_print);
 }
@@ -45,6 +49,7 @@ void	wait_ready_start(t_data *data)
     }
     pthread_mutex_lock(&data->mutex_state_sim);
 	data->start_sim = 1;
+    data->ts_start = 0;
     data->ts_start = get_timestamp(data);
 	pthread_cond_broadcast(&data->cond_start);
 	pthread_mutex_unlock(&data->mutex_state_sim);

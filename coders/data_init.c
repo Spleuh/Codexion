@@ -30,8 +30,6 @@ void	init_args(t_data *data, char **argv)
 	data->count_ready = 0;
 }
 
-
-
 int	init_dongles_coders(t_data *data)
 {
 	if (init_dongles(data) != 0)

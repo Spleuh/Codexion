@@ -54,6 +54,7 @@ void	check_all(t_data *data)
 				+ data->t_burnout) < get_timestamp(data))
 		{
 			print_stop_burned_out(data, data->coders[i].id);
+			send_broadcast_state_dongle(data);
 			return ;
 		}
 		i++;

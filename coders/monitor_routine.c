@@ -77,5 +77,6 @@ void	*routine_monitor(void *arg)
 		return (NULL);
 	while (get_stop_sim(data) == 0)
 		check_all(data);
+	wait_ready_end(data);
 	return (NULL);
 }

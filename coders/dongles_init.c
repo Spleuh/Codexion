@@ -20,7 +20,6 @@ void	init_args_dongles(t_dongle *dongles, int n, t_data *data)
 	while (i < n)
 	{
 		dongles[i].id = i;
-		dongles[i].available = 1;
 		dongles[i].end_cooldown = -1;
 		dongles[i].mutex_state_dongles = &data->mutex_state_dongles;
 		dongles[i].cond_state_dongles = &data->cond_state_dongles;

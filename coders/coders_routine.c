@@ -16,20 +16,14 @@ void	take_dongles(t_coder *coder)
 {
 	if (get_stop_sim(coder->data))
 		return ;
-	add_requests(coder);
 	pthread_mutex_lock(&coder->data->mutex_state_dongles);
+	add_requests(coder);
 	while (get_stop_sim(coder->data) == 0 && check_priority(coder) != 0)
 	{
 		pthread_cond_wait(&coder->data->cond_state_dongles,
 			&coder->data->mutex_state_dongles);
 	}
-	if (get_stop_sim(coder->data))
-	{
-		pthread_mutex_unlock(&coder->data->mutex_state_dongles);
-		return ;
-	}
-	coder->first->available = 0;
-	coder->second->available = 0;
+	update_cd_dongles(coder);
 	remove_requests(coder);
 	pthread_cond_broadcast(&coder->data->cond_state_dongles);
 	pthread_mutex_unlock(&coder->data->mutex_state_dongles);
@@ -40,8 +34,8 @@ void	take_dongles(t_coder *coder)
 
 void	compile(t_coder *coder)
 {
-	print_mutex(coder->data, "is compiling", coder->id);
 	set_last_compile(coder, get_timestamp(coder->data));
+	print_mutex(coder->data, "is compiling", coder->id);
 	if (get_stop_sim(coder->data))
 	{
 		unlock_dongles(coder);
@@ -49,12 +43,6 @@ void	compile(t_coder *coder)
 	}
 	usleep(coder->data->t_compile * 1000);
 	incr_compile_done(coder);
-	update_cd_dongles(coder);
-	set_available(coder->data, coder->first, 1);
-	set_available(coder->data, coder->second, 1);
-	pthread_mutex_lock(&coder->data->mutex_state_dongles);
-	pthread_cond_broadcast(&coder->data->cond_state_dongles);
-	pthread_mutex_unlock(&coder->data->mutex_state_dongles);
 	unlock_dongles(coder);
 }
 
@@ -96,5 +84,6 @@ void	*routine_coder(void *arg)
 		debug(coder);
 		refactor(coder);
 	}
+	decr_count_ready(coder->data);
 	return (NULL);
 }

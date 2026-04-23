@@ -43,3 +43,10 @@ void	set_start_sim(t_data *data, int i)
 	pthread_cond_broadcast(&data->cond_start);
 	pthread_mutex_unlock(&data->mutex_state_sim);
 }
+
+void	decr_count_ready(t_data *data)
+{
+	pthread_mutex_lock(&data->mutex_state_sim);
+	data->count_ready--;
+	pthread_mutex_unlock(&data->mutex_state_sim);
+}

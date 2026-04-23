@@ -17,14 +17,10 @@ void	print_mutex(t_data *data, char *str, int id)
 {
 	long	ts;
 
-	pthread_mutex_lock(&data->mutex_print);
-	if (get_stop_sim(data))
-	{
-		pthread_mutex_unlock(&data->mutex_print);
-		return ;
-	}
 	ts = get_timestamp(data);
-	printf("%ld %d %s\n", ts, id + 1, str);
+	pthread_mutex_lock(&data->mutex_print);
+	if (get_stop_sim(data) != 1)
+		printf("%ld %d %s\n", ts, id, str);
 	pthread_mutex_unlock(&data->mutex_print);
 }
 
@@ -55,7 +51,7 @@ void	wait_ready_start(t_data *data)
 
 void	wait_ready_end(t_data *data)
 {
-	while (get_count_ready(data) > 0)
+	while (get_stop_sim(data) == 1 && get_count_ready(data) > 1)
 	{
 		send_broadcast_state_dongle(data);
 		usleep(1000);

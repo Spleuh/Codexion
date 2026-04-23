@@ -33,11 +33,7 @@ void	try_lock_dongles(t_coder *coder)
 
 int	check_priority(t_coder *coder)
 {
-	if (coder->first->available == 0)
-		return (1);
-	else if (coder->second->available == 0)
-		return (1);
-	else if (get_id_priority(coder->first->queue) != coder->id)
+	if (get_id_priority(coder->first->queue) != coder->id)
 		return (1);
 	else if (get_id_priority(coder->second->queue) != coder->id)
 		return (1);
@@ -52,10 +48,13 @@ int	update_cd_dongles(t_coder *coder)
 {
 	long	new_cd;
 
-	pthread_mutex_lock(&coder->data->mutex_state_dongles);
-	new_cd = get_timestamp(coder->data) + coder->data->t_cooldown;
+	new_cd = get_timestamp(coder->data) + coder->data->t_cooldown + coder->data->t_compile;
 	coder->first->end_cooldown = new_cd;
 	coder->second->end_cooldown = new_cd;
-	pthread_mutex_unlock(&coder->data->mutex_state_dongles);
 	return (0);
+}
+
+void	incr_count_exit(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->data->mutex_state_sim);
 }

@@ -20,9 +20,9 @@ int	main(int argc, char **argv)
 
 	if (parser(argc, argv))
 	{
-		printf("Error: n_coder and n_compile > 1, ");
-		printf("scheduler 'fifo' or 'edf' and other > 0\n");
-		return (1);
+		printf("Error: n_coder and n_compile >= 1, ");
+		printf("scheduler 'fifo' or 'edf' and other >= 0\n");
+		return (0);
 	}
 	data = init_data(argv);
 	if (!data)

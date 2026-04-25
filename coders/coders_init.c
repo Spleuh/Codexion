@@ -21,7 +21,7 @@ void	init_args_coders(t_coder *coders, int n, t_data *data)
 	{
 		coders[i].id = i + 1;
 		coders[i].compiles_done = 0;
-		coders[i].last_compile_start = 0;
+		coders[i].last_compile_start = -1;
 		coders[i].data = data;
 		i++;
 	}

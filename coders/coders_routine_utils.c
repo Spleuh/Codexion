@@ -48,7 +48,8 @@ int	update_cd_dongles(t_coder *coder)
 {
 	long	new_cd;
 
-	new_cd = get_timestamp(coder->data) + coder->data->t_cooldown + coder->data->t_compile;
+	new_cd = get_timestamp(coder->data);
+	new_cd += coder->data->t_cooldown + coder->data->t_compile;
 	coder->first->end_cooldown = new_cd;
 	coder->second->end_cooldown = new_cd;
 	return (0);

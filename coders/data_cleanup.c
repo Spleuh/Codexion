@@ -33,7 +33,6 @@ void	cleanup_dongles_coders(t_data *data)
 void	cleanup_data(t_data *data)
 {
 	destroy_mutex_cond_data(data);
-	pthread_cond_destroy(&data->cond_start);
 	cleanup_dongles_coders(data);
 	free(data);
 }

@@ -61,12 +61,5 @@ t_data	*init_data(char **argv)
 		free(data);
 		return (NULL);
 	}
-	if (init_mutex_cond_data(data) != 0)
-	{
-		destroy_mutex_cond_data(data);
-		cleanup_dongles_coders(data);
-		free(data);
-		return (NULL);
-	}
 	return (data);
 }

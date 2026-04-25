@@ -17,8 +17,8 @@ void	print_mutex(t_data *data, char *str, int id)
 {
 	long	ts;
 
-	ts = get_timestamp(data);
 	pthread_mutex_lock(&data->mutex_print);
+	ts = get_timestamp(data);
 	if (get_stop_sim(data) != 1)
 		printf("%ld %d %s\n", ts, id, str);
 	pthread_mutex_unlock(&data->mutex_print);
@@ -28,9 +28,9 @@ void	print_stop_burned_out(t_data *data, int id)
 {
 	long	ts;
 
-	ts = get_timestamp(data);
 	pthread_mutex_lock(&data->mutex_print);
 	pthread_mutex_lock(&data->mutex_state_sim);
+	ts = get_timestamp(data);
 	data->stop_sim = 1;
 	printf("%ld %d burned out\n", ts, id);
 	pthread_mutex_unlock(&data->mutex_state_sim);

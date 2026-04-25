@@ -1,4 +1,4 @@
-CFLAGS= gcc -Wall -Wextra -Werror -pthread
+CFLAGS= cc -Wall -Wextra -Werror -pthread
 
 DEBUG_FLAGS= -fsanitize=thread -g
 
